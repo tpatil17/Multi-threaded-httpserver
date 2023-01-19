@@ -5,26 +5,25 @@
 #include <string.h>
 #include <unistd.h>
 
-int main(){
+int main() {
 
     char read_buf[4096];
 
     int offset;
 
-    int red = read(STDIN_FILENO, read_buf, 4096 );
+    int red = read(STDIN_FILENO, read_buf, 4096);
 
-    char function[100], file_name[256]; 
+    char function[100], file_name[256];
 
     sscanf(read_buf, "%s %s %n", function, file_name, &offset);
 
-    if (access(file_name, F_OK) != 0){
+    if (access(file_name, F_OK) != 0) {
         write(2, "Invalid Command", strlen("Invalid Command"));
         return 1;
     }
 
-
-    if (strcmp(function, "get") == 0){
-        if (red > offset){
+    if (strcmp(function, "get") == 0) {
+        if (red > offset) {
             printf("Invalid Command\n");
             printf("%d\n", red);
             printf("%d\n", offset);
@@ -36,49 +35,35 @@ int main(){
 
         int file_rd;
 
-        while ((file_rd = read(fd, buffer, 4095)) > 0){
+        while ((file_rd = read(fd, buffer, 4095)) > 0) {
 
             buffer[file_rd] = '\0';
 
             write(STDOUT_FILENO, buffer, file_rd);
-
         }
 
         close(fd);
 
         return 0;
     }
-    if (strcmp(function, "set") == 0){
+    if (strcmp(function, "set") == 0) {
 
         int set_read;
         char buff[4096];
 
-        int fd2 = open(file_name, O_WRONLY|O_TRUNC);
+        int fd2 = open(file_name, O_WRONLY | O_TRUNC);
 
-        while( (set_read = read(STDIN_FILENO, buff, 4095)) > 0){
+        while ((set_read = read(STDIN_FILENO, buff, 4095)) > 0) {
 
             buff[set_read] = '\0';
 
             write(fd2, buff, set_read);
-
         }
 
         close(fd2);
 
-    }
-    else{
+    } else {
         write(2, "Invalid Command", strlen("Invalid Command"));
         return 1;
     }
-
 }
-
-
-
-
-
-
-
-
-
-
