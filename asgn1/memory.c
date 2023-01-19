@@ -5,111 +5,80 @@
 #include <string.h>
 #include <unistd.h>
 
-void get(int fd) {
+int main(){
 
-    char buff[1024];
-    int red;
+    char read_buf[4096];
 
-    while ((red = read(fd, buff, 1023)) > 0) {
+    int offset;
 
-        buff[red] = '\0';
+    int red = read(STDIN_FILENO, read_buf, 4096 );
 
-        if ((write(STDOUT_FILENO, buff, red)) == -1) {
-            perror("write");
-            exit(1);
-        }
+    char function[100], file_name[256]; 
+
+    sscanf(read_buf, "%s %s %n", function, file_name, &offset);
+
+    if (access(file_name, F_OK) != 0){
+        write(2, "Invalid Command", strlen("Invalid Command"));
+        return 1;
     }
 
-    return;
-}
 
-int main(int argc, char *argv[]) {
-
-    if (strcmp(argv[1], "get") == 0) {
-
-        if (argc < 3) {
+    if (strcmp(function, "get") == 0){
+        if (red > offset){
             printf("Invalid Command\n");
+            printf("%d\n", red);
+            printf("%d\n", offset);
             return 1;
         }
+        int fd = open(file_name, O_RDONLY);
 
-        if (argc >= 4) {
-            if (argc > 4) {
-                printf("Invalid Command\n");
-                return 1;
-            }
+        char buffer[4096];
 
-            if (strcmp(argv[3], "n") != 0) {
-                printf("Invalid Command\n");
-                return 1;
-            }
+        int file_rd;
 
-            else {
+        while ((file_rd = read(fd, buffer, 4095)) > 0){
 
-                if (access(argv[2], F_OK) != 0) {
-                    printf("Invalid Command\n");
-                    return 1;
-                } else {
+            buffer[file_rd] = '\0';
 
-                    int fd = open(argv[2], O_RDONLY);
-                    get(fd);
-                    close(fd);
-                    return 0;
-                }
-            }
+            write(STDOUT_FILENO, buffer, file_rd);
 
-        }
-
-        else {
-
-            if (access(argv[2], F_OK) != 0) {
-                printf("Invalid Command\n");
-
-                return 1;
-            } else {
-
-                int fd = open(argv[2], O_RDONLY);
-                get(fd);
-                close(fd);
-                return 0;
-            }
-        }
-    }
-    if (strcmp(argv[1], "set") == 0) {
-
-        char buff[1024];
-
-        if (argc < 3) {
-            printf("Invalid Command\n");
-            return 1;
-        }
-
-        if (access(argv[2], F_OK) != 0) {
-            printf("Invlaid Command\n");
-
-            return 1;
-        }
-
-        int fd = open(argv[2], O_WRONLY | O_TRUNC);
-
-        int red;
-
-        while ((red = read(0, buff, 1023)) > 0) {
-
-            buff[red] = '\0';
-
-            if ((write(fd, buff, red)) == -1) {
-                perror("write");
-                exit(1);
-            }
-            // memset(buff, NULL, 1024);
         }
 
         close(fd);
 
         return 0;
-    } else {
+    }
+    if (strcmp(function, "set") == 0){
 
-        printf("Invalid Command\n");
+        int set_read;
+        char buff[4096];
+
+        int fd2 = open(file_name, O_WRONLY|O_TRUNC);
+
+        while( (set_read = read(STDIN_FILENO, buff, 4095)) > 0){
+
+            buff[set_read] = '\0';
+
+            write(fd2, buff, set_read);
+
+        }
+
+        close(fd2);
+
+    }
+    else{
+        write(2, "Invalid Command", strlen("Invalid Command"));
         return 1;
     }
+
 }
+
+
+
+
+
+
+
+
+
+
