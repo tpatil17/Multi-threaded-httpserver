@@ -4,20 +4,32 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
+
+int is_file(char name[]) {
+
+    struct stat n;
+    stat(name, &n);
+
+    return S_ISREG(n.st_mode);
+}
 
 int main() {
 
-    char read_buf[4096];
+    char read_buf[4096] = "";
 
-    int offset;
+    int offset = 0;
 
     int red = read(STDIN_FILENO, read_buf, 4096);
 
-    char function[100], file_name[256];
+    char function[100] = "";
+    char file_name[256] = "";
 
     sscanf(read_buf, "%s %s %n", function, file_name, &offset);
 
-    if (access(file_name, F_OK) != 0) {
+    int val = is_file(file_name);
+
+    if (access(file_name, F_OK) != 0 | val == 0) {
         write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
         return 1;
     }
@@ -29,9 +41,14 @@ int main() {
         }
         int fd = open(file_name, O_RDONLY);
 
-        char buffer[4096];
+        if (fd < 0) {
+            write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
+            return 1;
+        }
 
-        int file_rd;
+        char buffer[4096] = "";
+
+        int file_rd = 0;
 
         while ((file_rd = read(fd, buffer, 4095)) > 0) {
 
@@ -46,10 +63,15 @@ int main() {
     }
     if (strcmp(function, "set") == 0) {
 
-        int set_read;
-        char buff[4096];
+        int set_read = 0;
+        char buff[4096] = "";
 
         int fd2 = open(file_name, O_WRONLY | O_TRUNC);
+
+        if (fd2 < 0) {
+            write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
+            return 1;
+        }
 
         while ((set_read = read(STDIN_FILENO, buff, 4095)) > 0) {
 
@@ -59,9 +81,10 @@ int main() {
         }
 
         close(fd2);
+        return 0;
 
     } else {
-        write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command"));
+        write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
         return 1;
     }
 }
