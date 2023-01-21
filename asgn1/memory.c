@@ -9,6 +9,7 @@
 int is_file(char name[]) {
 
     struct stat n;
+    memset(&n, 0, sizeof(struct stat));
     stat(name, &n);
 
     return S_ISDIR(n.st_mode);
@@ -28,6 +29,8 @@ int main() {
 
     char *token;
 
+    char temp[4096] = "";
+
     ret = strchr(read_buf, '\n');
 
     if (ret == NULL) {
@@ -42,9 +45,22 @@ int main() {
     char function[100] = "";
     char file_name[256] = "";
 
-    sscanf(token, "%s %s %n", function, file_name, &offset);
+    int j = 0;
 
-    int val = is_file(file_name);
+    int num = strlen(token);
+
+    //printf("num: %d\n", num);
+    //printf("red: %d\n", red);
+    //printf("red-num: %d\n", red - num);
+
+    for (j = 0; j < (red - num); j++) {
+
+        temp[j] = read_buf[num + j];
+    }
+
+    sscanf(token, "%s %s %n", function, file_name, &offset);
+    int val = 0;
+    val = is_file(file_name);
 
     if (val != 0) {
 
@@ -70,7 +86,7 @@ int main() {
     if (ctr > 2) {
 
         write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
-        printf("or the ctr: %d\n", ctr);
+        // printf("or the ctr: %d\n", ctr);
         return 1;
     }
 
@@ -122,16 +138,18 @@ int main() {
             write(fd2, token, strlen(token));
         }
 
-        unsigned long i = 0;
+        int i = 0;
 
-        char new_init[4096] = "";
+        char new_temp[4096] = "";
 
-        for (i = 0; i < (strlen(init) - 1); i++) {
+        for (i = 0; i < ((red - num)); i++) {
 
-            new_init[i] = init[i + 1];
+            new_temp[i] = read_buf[(num + 1) + i];
         }
 
-        write(fd2, new_init, strlen(new_init));
+        //printf("len of temp: %d\n", (red - num)-1);
+
+        write(fd2, new_temp, (red - num) - 1);
 
         while ((set_read = read(STDIN_FILENO, buff, 4095)) > 0) {
 
