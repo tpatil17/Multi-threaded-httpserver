@@ -28,12 +28,11 @@ int main() {
 
     ret = strchr(read_buf, '\n');
 
-    if( ret == NULL){
+    if (ret == NULL) {
 
         //printf("It's me strchr\n");
         write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
         return 1;
-
     }
 
     token = strtok(read_buf, "\n");
@@ -60,22 +59,21 @@ int main() {
 
     token2 = strtok(safe, " ");
 
-    while( token2 != NULL){
+    while (token2 != NULL) {
 
-        ctr +=1;
+        ctr += 1;
         token2 = strtok(NULL, " ");
     }
 
-    if(ctr > 2){
+    if (ctr > 2) {
 
-         write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
-         //printf("or the ctr: %d\n", ctr);
-         return 1;
-
+        write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
+        //printf("or the ctr: %d\n", ctr);
+        return 1;
     }
 
     if (strcmp(function, "get") == 0) {
-        if (red > offset+1) {
+        if (red > offset + 1) {
             write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
             //printf("more chars than exp red: %d, exp: %d\n", red, offset);
             return 1;
@@ -118,7 +116,7 @@ int main() {
 
         token = strtok(NULL, "");
         //printf("Current token: %s\n", token);
-        if (token != NULL){
+        if (token != NULL) {
 
             write(fd2, token, strlen(token));
         }
