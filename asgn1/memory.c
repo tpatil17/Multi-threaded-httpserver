@@ -28,18 +28,14 @@ int main() {
 
     char *token;
 
-
     ret = strchr(read_buf, '\n');
 
     if (ret == NULL) {
 
-        
         write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
         return 1;
     }
     strcpy(init, ret);
-
-    
 
     token = strtok(read_buf, "\n");
 
@@ -50,10 +46,7 @@ int main() {
 
     int val = is_file(file_name);
 
-
-
     if (val != 0) {
-       
 
         write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
         return 1;
@@ -84,7 +77,7 @@ int main() {
     if (strcmp(function, "get") == 0) {
         if (red > offset + 1) {
             write(STDERR_FILENO, "Invalid Command\n", strlen("Invalid Command\n"));
-     
+
             return 1;
         }
         int fd = open(file_name, O_RDONLY);
@@ -111,7 +104,6 @@ int main() {
     }
     if (strcmp(function, "set") == 0) {
 
-
         int set_read = 0;
         char buff[4096] = "";
 
@@ -123,10 +115,8 @@ int main() {
             return 1;
         }
 
-     
         token = strtok(NULL, "");
 
-      
         if (token != NULL) {
 
             write(fd2, token, strlen(token));
@@ -141,21 +131,14 @@ int main() {
             new_init[i] = init[i + 1];
         }
 
-    
-
         write(fd2, new_init, strlen(new_init));
-      
 
         while ((set_read = read(STDIN_FILENO, buff, 4095)) > 0) {
 
             buff[set_read] = '\0';
 
-
-
             write(fd2, buff, set_read);
         }
-
-     
 
         close(fd2);
         write(STDOUT_FILENO, "OK\n", strlen("OK\n"));
