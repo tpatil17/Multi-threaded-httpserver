@@ -24,12 +24,12 @@ a struct to store the response
 */
 
 struct Response {
-  char version[24] = "";
-  int status_code = 0;
-  char status_phrase[100] = "";
-  char header[19] = "";
-  long length = 0;
-  char message[64] = "";
+  char version[24];
+  int status_code;
+  char status_phrase[100];
+  char header[19];
+  long length;
+  char message[64];
 };
 
 void handle_connection(int connfd){
@@ -50,12 +50,12 @@ void handle_connection(int connfd){
         res.length = strlen("Bad Request\n");
         strcpy(res.header, "Content-Length");
         strcpy(res.message, "Bad Request\n");
-        sprintf(resp_buf, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
+        sprintf(resp_buffer, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
             res.status_code, res.status_phrase, res.header, res.length,
             res.message);
-        write(connfd, resp_buf, strlen(resp_buf));
+        write(connfd, resp_buffer, strlen(resp_buffer));
 
-        strcpy(resp_buf, "");
+        strcpy(resp_buffer, "");
 
     }
         res.status_code = 200;
@@ -64,12 +64,12 @@ void handle_connection(int connfd){
         res.length = strlen("OK\n");
         strcpy(res.header, "Content-Length");
         strcpy(res.message, "OK\n");
-        sprintf(resp_buf, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
+        sprintf(resp_buffer, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
             res.status_code, res.status_phrase, res.header, res.length,
             res.message);
-        write(connfd, resp_buf, strlen(resp_buf));
+        write(connfd, resp_buffer, strlen(resp_buffer));
 
-        strcpy(resp_buf, "");
+        strcpy(resp_buffer, "");
 
 
     return;
