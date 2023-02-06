@@ -42,6 +42,7 @@ struct Request
     int off_set;
     int err_flag; // 1: Bad Request, 2: Internal Server Error, 3: File not Found
     int length;
+    int size;
 
 };
 
@@ -106,7 +107,7 @@ struct Request process_request(char req_buffer[]){
 
       req.err_flag = 2;
 
-      strcpy(p_buf "");
+      strcpy(p_buf, "");
       return req;
     }
 
@@ -289,30 +290,30 @@ struct Request process_request(char req_buffer[]){
 
 
 
-void Get(char file[], int connfd){
+// void Get(char file[], int connfd){
 
-    int fd = 0;
+//     int fd = 0;
 
-    fd = open(file);
+//     fd = open(file);
 
-    if(fd < 0){
-        errx(EXIT_FAILURE, "File did not open succesfully");
-    }
-    int read_file = 0;
+//     if(fd < 0){
+//         errx(EXIT_FAILURE, "File did not open succesfully");
+//     }
+//     int read_file = 0;
 
-    char file_content[4096] = "";
+//     char file_content[4096] = "";
 
-    while((read_file = read(fd, file_content, 4095)) > 0){
+//     while((read_file = read(fd, file_content, 4095)) > 0){
 
-        if (write(connfd, file_content, read_file) < 0){
-            errx(EXIT_FAILURE, "write error");
-        }
+//         if (write(connfd, file_content, read_file) < 0){
+//             errx(EXIT_FAILURE, "write error");
+//         }
 
-        strcpy(file_content, ""); //reset buffer to empty state 
-    }
-    close(fd);
-    return;
-}
+//         strcpy(file_content, ""); //reset buffer to empty state 
+//     }
+//     close(fd);
+//     return;
+// }
 
 void handle_connection(int connfd){
     char buffer[4096] = "";
@@ -329,7 +330,7 @@ void handle_connection(int connfd){
 
     req = process_request(buffer);
 
-    if (strcmp(req.method, "GET") == 0| strcmp(req.method, "get")){
+    if ((strcmp(req.method, "GET") == 0 )| (strcmp(req.method, "get") == 0)){
         printf("request processed succesfully, implement get\n");
 
     }
