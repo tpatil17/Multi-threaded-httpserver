@@ -333,11 +333,13 @@ void handle_connection(int connfd){
     req = process_request(buffer);
 
     if ((strcmp(req.method, "GET") == 0 )| (strcmp(req.method, "get") == 0)){
-        printf("request processed succesfully, implement get\n");
+        //printf("request processed succesfully, implement get\n");
+        write(connfd,"get is the method to be implemented\n", strlen("get is the method to be implemented\n") );
 
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
-        printf("request processed succesfully, implement put");
+        write(connfd,"put is the method to be implemented\n", strlen("put is the method to be implemented\n") );
+        //printf("request processed succesfully, implement put");
     }
 
 
