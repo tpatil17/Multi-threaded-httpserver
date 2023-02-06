@@ -292,30 +292,31 @@ struct Request process_request(char req_buffer[]){
 
 
 
-// void Get(char file[], int connfd){
+ int Get(char file[], int connfd){
 
-//     int fd = 0;
+    int fd = 0;
 
-//     fd = open(file);
+    fd = open(file);
 
-//     if(fd < 0){
-//         errx(EXIT_FAILURE, "File did not open succesfully");
-//     }
-//     int read_file = 0;
+    if(fd < 0){
+        errx(EXIT_FAILURE, "File did not open succesfully");
+    }
+    int read_file = 0;
 
-//     char file_content[4096] = "";
+    char file_content[4096] = "";
 
-//     while((read_file = read(fd, file_content, 4095)) > 0){
+    while((read_file = read(fd, file_content, 4095)) > 0){
 
-//         if (write(connfd, file_content, read_file) < 0){
-//             errx(EXIT_FAILURE, "write error");
-//         }
+        if (write(connfd, file_content, read_file) < 0){
+            errx(EXIT_FAILURE, "write error");
+            
+        }
 
-//         strcpy(file_content, ""); //reset buffer to empty state 
-//     }
-//     close(fd);
-//     return;
-// }
+        strcpy(file_content, ""); //reset buffer to empty state 
+    }
+    close(fd);
+    return 0;
+}
 
 void handle_connection(int connfd){
     char buffer[4096] = "";
@@ -331,14 +332,18 @@ void handle_connection(int connfd){
     struct Request req;
 
     req = process_request(buffer);
+    int val = -1;
 
     if ((strcmp(req.method, "GET") == 0 )| (strcmp(req.method, "get") == 0)){
         //printf("request processed succesfully, implement get\n");
-        write(connfd,"get is the method to be implemented\n", strlen("get is the method to be implemented\n") );
+        //write(connfd,"get is the method to be implemented\n", strlen("get is the method to be implemented\n") );
+        
+        val = Get(req.uri, connfd);
 
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
         write(connfd,"put is the method to be implemented\n", strlen("put is the method to be implemented\n") );
+        val = 0
         //printf("request processed succesfully, implement put");
     }
 
@@ -358,6 +363,7 @@ void handle_connection(int connfd){
         strcpy(resp_buffer, "");
 
     }
+    if ( val == 0){
         res.status_code = 200;
         strcpy(res.version, "HTTP/1.1");
         strcpy(res.status_phrase, "OK");
@@ -370,6 +376,7 @@ void handle_connection(int connfd){
         write(connfd, resp_buffer, strlen(resp_buffer));
 
         strcpy(resp_buffer, "");
+    }
 
 
     return;
