@@ -5,6 +5,7 @@
 #include <string.h>
 #include <errno.h>
 #include <err.h>
+#include <sys/stat.h>
 
 /**
    Converts a string to an 16 bits unsigned integer.
@@ -58,7 +59,7 @@ struct Request process_request(char req_buffer[]){
     strcpy(req.header, "");
     strcpy(req.value, "");
     
-    struct Response res;
+    //struct Response res;
 
   const char delim[2] = "\n";
 
