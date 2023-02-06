@@ -343,7 +343,7 @@ void handle_connection(int connfd){
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
         write(connfd,"put is the method to be implemented\n", strlen("put is the method to be implemented\n") );
-        val = 0
+        val = 0;
         //printf("request processed succesfully, implement put");
     }
 
