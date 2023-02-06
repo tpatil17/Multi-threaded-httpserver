@@ -7,6 +7,8 @@
 #include <err.h>
 #include <sys/stat.h>
 #include <ctype.h>
+#include <fcntl.h>
+
 
 /**
    Converts a string to an 16 bits unsigned integer.
@@ -296,7 +298,7 @@ struct Request process_request(char req_buffer[]){
 
     int fd = 0;
 
-    fd = open(file);
+    fd = open(file, O_RDONLY);
 
     if(fd < 0){
         errx(EXIT_FAILURE, "File did not open succesfully");
