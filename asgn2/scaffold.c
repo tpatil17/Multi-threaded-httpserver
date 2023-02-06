@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <err.h>
 #include <sys/stat.h>
+#include <ctype.h>
 
 /**
    Converts a string to an 16 bits unsigned integer.
