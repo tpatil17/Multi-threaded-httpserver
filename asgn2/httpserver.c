@@ -62,7 +62,7 @@ struct Request process_request(char req_buffer[]){
     strcpy(req.header, "");
     strcpy(req.value, "");
     
-    //struct Response res;
+
 
   const char delim[2] = "\n";
 
@@ -106,16 +106,6 @@ struct Request process_request(char req_buffer[]){
 
     if (strcmp(req.uri, "/") == 0 && strcmp(req.version, "HTTP/1.1") == 0) {
 
-    //   strcpy(res.version, "HTTP/1.1");
-    //   res.status_code = 500;
-    //   strcpy(res.status_phrase, "Internal Server Error");
-    //   strcpy(res.header, "Content-Length");
-    //   strcpy(res.message, "Internal Server Error\n");
-    //   res.length = strlen(res.message);
-    //   sprintf(buffer, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
-    //           res.status_code, res.status_phrase, res.header, res.length,
-    //           res.message);
-    //   write(connfd, buffer, strlen(buffer));
 
       req.err_flag = 2;
 
@@ -394,9 +384,9 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
   }
 
-  //dprintf(connfd, "req.len = %d\noff_set= %d\nbytes_read = %d\n", req.length, req.off_set, bytes_read);
+  dprintf(STDERR_FILENO, "req.len = %d\noff_set= %d\nbytes_read = %d\n", req.length, req.off_set, bytes_read);
 
-  
+
   if (req.length <= (bytes_read - req.off_set)){
 
     int ctr = 0;
@@ -411,7 +401,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
     if ( (write_all(fd, put_buf, req.length)) < 0){
       errx(1, "fail in writing\n");
     }
-    
+    //strcpy(put_buf, "");
   close(fd);
 
  
