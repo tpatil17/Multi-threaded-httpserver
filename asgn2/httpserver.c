@@ -32,7 +32,7 @@ struct Response {
   int status_code;
   char status_phrase[100];
   char header[19];
-  long length;
+  int length;
   char message[64];
 };
 
@@ -313,7 +313,7 @@ struct Request process_request(char req_buffer[]){
 
     fd = open(file, O_RDONLY);
 
-    char resp_buffer[4096] = "";
+    //char resp_buffer[4096] = "";
 
     if(fd < 0){
         errx(EXIT_FAILURE, "File did not open succesfully");
@@ -339,12 +339,12 @@ struct Request process_request(char req_buffer[]){
     res.length = strlen("OK\n");
     strcpy(res.header, "Content-Length");
     strcpy(res.message, "OK\n");
-    sprintf(resp_buffer, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
+    dprintf(connfd, "%s %d %s\r\n%s: %d\r\n\r\n%s", res.version,
             res.status_code, res.status_phrase, res.header, res.length,
             res.message);
-    write_all(connfd, resp_buffer, strlen(resp_buffer));
+    //write_all(connfd, resp_buffer, strlen(resp_buffer));
 
-    strcpy(resp_buffer, "");
+    //strcpy(resp_buffer, "");
     strcpy(res.status_phrase, "");
     strcpy(res.message, "");
 
