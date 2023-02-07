@@ -388,20 +388,21 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
     res.status_code = 201;
     strcpy(res.status_phrase, "Created");
     res.length = 8;
-    strcpy(res.message, "created\n");
+    strcpy(res.message, "Created\n");
     strcpy(res.header, "Content-Length");
     
 
   }
 
-  int ctr = 1;
-  char put_buf[4096] = "";
-  while (ctr < (bytes_read - req.off_set)){
+  
+  if (req.length <= (bytes_read - req.off_set)){
+
+    int ctr = 1;
+    char put_buf[4096] = "";
+    while (ctr < (bytes_read - req.off_set)){
     put_buf[ctr] = buffer[req.off_set + ctr];
     ctr+=1;
-  }
-
-  if (req.length <= (bytes_read - req.off_set)){
+    } 
 
 
 
@@ -420,6 +421,15 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
   }
   
   else{
+
+
+    int ctr = 1;
+    char put_buf[4096] = "";
+     while (ctr < (bytes_read - req.off_set)){
+    put_buf[ctr] = buffer[req.off_set + ctr];
+    ctr+=1;
+    }
+
 
 
     int written = write_all(fd, put_buf, bytes_read - req.off_set);
