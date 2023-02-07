@@ -300,6 +300,11 @@ struct Request process_request(char req_buffer[]){
 
     struct Response res;
 
+    struct stat st;
+
+    stat(file, &st);
+    int size = st.st_size;
+
    
     strcpy(res.status_phrase, "");
     strcpy(res.message, "");
@@ -343,13 +348,15 @@ struct Request process_request(char req_buffer[]){
     strcpy(res.status_phrase, "");
     strcpy(res.message, "");
 
+    dprintf(connfd, "Yes does move on after writing response\n", )
+
     int passed;
-    while((passed = pass_bytes(fd, connfd, 4096)) > 0){
+    if((passed = pass_bytes(fd, connfd, size)) < 0){
+
+      errx(EXIT_FAILURE, "pass bytes returned -1");
 
     }
-    if(passed < 0){
-      errx(EXIT_FAILURE, "pass bytes returned -1");
-    }
+    
     close(fd);
 
     return 0;
