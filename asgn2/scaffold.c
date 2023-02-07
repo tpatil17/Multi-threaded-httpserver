@@ -298,6 +298,8 @@ struct Request process_request(char req_buffer[]){
 
     int fd = 0;
 
+    struct Response res;
+
     fd = open(file, O_RDONLY);
 
     char resp_buf[4096] = "";
@@ -321,6 +323,8 @@ struct Request process_request(char req_buffer[]){
     write(connfd, resp_buffer, strlen(resp_buffer));
 
     strcpy(resp_buffer, "");
+    strcpy(res.status_phrase, "");
+    strcpy(res.message, "");
 
     while((read_file = read(fd, file_content, 4095)) > 0){
 
@@ -349,7 +353,7 @@ void handle_connection(int connfd){
     struct Request req;
 
     req = process_request(buffer);
-    int val = -1;
+    //int val = -1;
 
     if ((strcmp(req.method, "GET") == 0 )| (strcmp(req.method, "get") == 0)){
         //printf("request processed succesfully, implement get\n");
@@ -360,7 +364,7 @@ void handle_connection(int connfd){
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
         write(connfd,"put is the method to be implemented\n", strlen("put is the method to be implemented\n") );
-        val = 0;
+        
         //printf("request processed succesfully, implement put");
     }
 
