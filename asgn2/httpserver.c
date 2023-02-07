@@ -406,7 +406,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
 
 
-    if ( (write_all(fd, put_buf, req.length)) < 0){
+    if ( (write_all(fd, put_buf, req.length-1)) < 0){
       errx(1, "fail in writing\n");
     }
     
