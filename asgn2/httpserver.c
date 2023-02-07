@@ -399,7 +399,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
     ctr+=1;
   }
 
-  if (req.length < (bytes_read - req.off_set)){
+  if (req.length <= (bytes_read - req.off_set)){
 
     dprintf(connfd, "HERE as expected\n");
 
