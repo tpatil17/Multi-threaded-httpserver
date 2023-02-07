@@ -300,6 +300,10 @@ struct Request process_request(char req_buffer[]){
 
     struct Response res;
 
+    strcpy(resp_buffer, "");
+    strcpy(res.status_phrase, "");
+    strcpy(res.message, "");
+
     fd = open(file, O_RDONLY);
 
     char resp_buffer[4096] = "";
