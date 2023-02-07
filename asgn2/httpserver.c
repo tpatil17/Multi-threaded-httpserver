@@ -369,24 +369,6 @@ void handle_connection(int connfd){
     }
 
 
-    if (write(STDOUT_FILENO, buffer, bytes_read) < 0){
-        res.status_code = 400;
-        strcpy(res.version, "HTTP/1.1");
-        strcpy(res.status_phrase, "Bad Request");
-        res.length = strlen("Bad Request\n");
-        strcpy(res.header, "Content-Length");
-        strcpy(res.message, "Bad Request\n");
-        sprintf(resp_buffer, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
-            res.status_code, res.status_phrase, res.header, res.length,
-            res.message);
-        write(connfd, resp_buffer, strlen(resp_buffer));
-
-        strcpy(resp_buffer, "");
-
-    }
-    
-
-
     return;
 
 
