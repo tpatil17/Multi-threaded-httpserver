@@ -300,12 +300,27 @@ struct Request process_request(char req_buffer[]){
 
     fd = open(file, O_RDONLY);
 
+    char resp_buf[4096] = "";
+
     if(fd < 0){
         errx(EXIT_FAILURE, "File did not open succesfully");
     }
     int read_file = 0;
 
     char file_content[4096] = "";
+
+    res.status_code = 200;
+    strcpy(res.version, "HTTP/1.1");
+    strcpy(res.status_phrase, "OK");
+    res.length = strlen("OK\n");
+    strcpy(res.header, "Content-Length");
+    strcpy(res.message, "OK\n");
+    sprintf(resp_buffer, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
+            res.status_code, res.status_phrase, res.header, res.length,
+            res.message);
+    write(connfd, resp_buffer, strlen(resp_buffer));
+
+    strcpy(resp_buffer, "");
 
     while((read_file = read(fd, file_content, 4095)) > 0){
 
@@ -340,7 +355,7 @@ void handle_connection(int connfd){
         //printf("request processed succesfully, implement get\n");
         //write(connfd,"get is the method to be implemented\n", strlen("get is the method to be implemented\n") );
         
-        val = Get(req.uri, connfd);
+        Get(req.uri, connfd);
 
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
@@ -365,20 +380,7 @@ void handle_connection(int connfd){
         strcpy(resp_buffer, "");
 
     }
-    if ( val == 0){
-        res.status_code = 200;
-        strcpy(res.version, "HTTP/1.1");
-        strcpy(res.status_phrase, "OK");
-        res.length = strlen("OK\n");
-        strcpy(res.header, "Content-Length");
-        strcpy(res.message, "OK\n");
-        sprintf(resp_buffer, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
-            res.status_code, res.status_phrase, res.header, res.length,
-            res.message);
-        write(connfd, resp_buffer, strlen(resp_buffer));
-
-        strcpy(resp_buffer, "");
-    }
+    
 
 
     return;
