@@ -426,8 +426,8 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
   }
 
-  dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n", res.version,
-         res.status_code, res.status_phrase, res.header, res.length
+  dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
+         res.status_code, res.status_phrase, res.header, res.length, res.message
           );
 
   return 0;
