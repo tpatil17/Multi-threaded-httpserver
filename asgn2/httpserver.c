@@ -412,8 +412,8 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
   close(fd);
 
   //  dprintf(connfd, "Write done\n");
-  dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n%s\n", res.version,
-         res.status_code, res.status_phrase, res.header, res.length, res.message
+  dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n", res.version,
+         res.status_code, res.status_phrase, res.header, res.length
           );
 
 
@@ -463,7 +463,7 @@ void handle_connection(int connfd){
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
 
-      dprintf(connfd, "No problem here lets try to execute function put\n");
+      //dprintf(connfd, "No problem here lets try to execute function put\n");
         
       Put(connfd, req.uri, req, buffer ,bytes_read);
 
@@ -502,11 +502,15 @@ int main(int argc, char *argv[]){
 
     while(1){
         int connfd = listener_accept(&sock);
+        //dprintf(connfd, "no problem\n");
         if(connfd < 0){
             warn("Accept Error");
             continue;
+        
         }
+        //dprintf(connfd, "handle_connection");
         handle_connection(connfd);
+
         
         close(connfd);
         
