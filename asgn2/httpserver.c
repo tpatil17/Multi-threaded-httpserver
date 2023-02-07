@@ -348,7 +348,7 @@ struct Request process_request(char req_buffer[]){
     strcpy(res.status_phrase, "");
     strcpy(res.message, "");
 
-    dprintf(connfd, "Yes does move on after writing response\n", );
+    dprintf(connfd, "Yes does move on after writing response\n" );
 
     int passed;
     if((passed = pass_bytes(fd, connfd, size)) < 0){
