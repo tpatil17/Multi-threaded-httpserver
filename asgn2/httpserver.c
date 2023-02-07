@@ -86,6 +86,14 @@ struct Request process_request(char req_buffer[]){
 
   strcpy(p_buf, token);
 
+     if(token == NULL){
+
+        req.err_flag = 5; // nc -zv do not wirte to log just return
+
+        return req;
+
+    }
+
   if ((check = sscanf(p_buf, "%s /%s %s %n", req.method, req.uri, req.version,
                       &req.off_set)) != 3) {
 
@@ -285,6 +293,9 @@ struct Request process_request(char req_buffer[]){
 
     req.off_set -= 4;
   }
+  if (req.off_set > 2048){
+    req.err_flag = 7;
+  }
 
   req.length = atoi(perm_val);
 
@@ -347,12 +358,77 @@ struct Request process_request(char req_buffer[]){
     return 0;
 }
 
+int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_read){
+
+  struct Response res;
+
+  int fd;
+
+  strcpy(res.header, "");
+  strcpy(res.message, "");
+  strcpy(res.status_phrase, "");
+  strcpy(res.version, "");
+
+
+
+  if(access(file, F_OK) == 0){
+    fd = open(file, O_WRONLY | O_TRUNC);
+    res.status_code = 200;
+    strcpy(res.status_phrase, "OK");
+    res.length = 3;
+    strcpy(res.message, "OK\n");
+    strcpy(res.header, "Content-Length");
+    strcpy(res.version, "HTTP/1.1");
+
+  }
+  else{
+    fd = open(file, O_WRONLY | O_CREAT, 0777);
+    res.status_code = 201;
+    strcpy(res.status_phrase, "Created");
+    res.length = 8;
+    strcpy(res.message, "created\n");
+    strcpy(res.header, "Content-Length");
+    strcpy(res.version, "HTTP/1.1");
+
+  }
+
+  ctr = 0;
+  char put_buf[4096] = "";
+  while (ctr < (bytes_read - req.off_set)){
+    put_buf[ctr] = buffer[req.off_set + ctr];
+  }
+
+  if (req.length < (bytes_read - req.off_set)){
+    write_all(fd, put_buf, req.length);
+
+    close(fd);
+
+  }
+  else{
+
+    int written = write_all(fd, put_buf, bytes_read - req.off_set);
+    
+    pass_bytes(connfd, fd, req.length - written );
+
+    close(fd);
+
+  }
+
+  dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n", res.version,
+         res.status_code, res.status_phrase, res.header, res.length
+          );
+
+  return 0;
+
+
+}
+
 void handle_connection(int connfd){
     char buffer[4096] = "";
 
-    //int bytes_read = 0;
+    int bytes_read = 0;
     
-    read(connfd, buffer, 4096);
+    bytes_read = read(connfd, buffer, 4096);
 
     struct Request req;
 
@@ -367,9 +443,10 @@ void handle_connection(int connfd){
 
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
-        write(connfd,"put is the method to be implemented\n", strlen("put is the method to be implemented\n") );
         
-        //printf("request processed succesfully, implement put");
+        Put(connfd, req.uri, req, bytes_read);
+
+
     }
 
 
