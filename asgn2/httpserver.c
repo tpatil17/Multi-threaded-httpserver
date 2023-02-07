@@ -342,9 +342,9 @@ struct Request process_request(char req_buffer[]){
 void handle_connection(int connfd){
     char buffer[4096] = "";
 
-    int bytes_read = 0;
+    //int bytes_read = 0;
     
-    bytes_read = read(connfd, buffer, 4096);
+    read(connfd, buffer, 4096);
 
     struct Request req;
 
