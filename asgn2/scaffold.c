@@ -302,7 +302,7 @@ struct Request process_request(char req_buffer[]){
 
     fd = open(file, O_RDONLY);
 
-    char resp_buf[4096] = "";
+    char resp_buffer[4096] = "";
 
     if(fd < 0){
         errx(EXIT_FAILURE, "File did not open succesfully");
