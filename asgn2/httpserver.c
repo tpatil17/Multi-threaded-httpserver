@@ -312,18 +312,17 @@ struct Request process_request(char req_buffer[]){
     char file_content[4096] = "";
 
 
-    while((read_file = read(fd, file_content, 4095)) > 0){
+    // while((read_file = read(fd, file_content, 4095)) > 0){
 
-        if (write(connfd, file_content, read_file) < 0){
-            errx(EXIT_FAILURE, "write error");
+    //     if (write(connfd, file_content, read_file) < 0){
+    //         errx(EXIT_FAILURE, "write error");
             
-        }
+    //     }
 
-        strcpy(file_content, ""); //reset buffer to empty state 
-    }
-    close(fd);
+    //     strcpy(file_content, ""); //reset buffer to empty state 
+    // }
 
-        res.status_code = 200;
+    res.status_code = 200;
     strcpy(res.version, "HTTP/1.1");
     strcpy(res.status_phrase, "OK");
     res.length = strlen("OK\n");
@@ -332,11 +331,20 @@ struct Request process_request(char req_buffer[]){
     sprintf(resp_buffer, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
             res.status_code, res.status_phrase, res.header, res.length,
             res.message);
-    write(connfd, resp_buffer, strlen(resp_buffer));
+    write_all(connfd, resp_buffer, strlen(resp_buffer));
 
     strcpy(resp_buffer, "");
     strcpy(res.status_phrase, "");
     strcpy(res.message, "");
+
+    int passed;
+    while((passed = pass_bytes(fd, connfd, 4096)) > 0){
+
+    }
+    if(passed < 0){
+      errx(EXIT_FAILURE, "pass bytes returned -1");
+    }
+    close(fd);
 
     return 0;
 }
