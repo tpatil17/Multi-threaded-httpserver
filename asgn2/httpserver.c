@@ -32,7 +32,7 @@ struct Response {
   int status_code;
   char status_phrase[100];
   char header[19];
-  int length;
+  long length;
   char message[64];
 };
 
@@ -336,19 +336,19 @@ struct Request process_request(char req_buffer[]){
     res.status_code = 200;
     strcpy(res.version, "HTTP/1.1");
     strcpy(res.status_phrase, "OK");
-    res.length = 10;
+    res.length = size;
     strcpy(res.header, "Content-Length");
-    strcpy(res.message, "OK");
-    dprintf(connfd, "%s %d %s\r\n%s: %d\r\n\r\n%s\n", res.version,
+    //strcpy(res.message, "OK");
+    dprintf(connfd, "%s %d %s\r\n%s: %d\r\n\r\n", res.version,
             res.status_code, res.status_phrase, res.header, res.length,
-            res.message);
+            );
     //write_all(connfd, resp_buffer, strlen(resp_buffer));
 
     //strcpy(resp_buffer, "");
     strcpy(res.status_phrase, "");
     strcpy(res.message, "");
 
-    dprintf(connfd, "Yes does move on after writing response\n" );
+    //dprintf(connfd, "Yes does move on after writing response\n" );
 
     int passed;
     if((passed = pass_bytes(fd, connfd, size)) < 0){
