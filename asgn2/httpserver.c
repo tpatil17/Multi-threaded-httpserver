@@ -400,12 +400,23 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
   }
 
   if (req.length < (bytes_read - req.off_set)){
-    write_all(fd, put_buf, req.length);
+
+    dprintf(connfd, "HERE as expected\n");
+
+    if ( (write_all(fd, put_buf, req.length)) < 0){
+      errx(1, "fail in writing\n");
+    }
+    
+
+    dprintf(connfd, "Write done\n");
 
     close(fd);
 
   }
+  
   else{
+
+    dprintf(connfd, "should not venture here\n");
 
     int written = write_all(fd, put_buf, bytes_read - req.off_set);
     
