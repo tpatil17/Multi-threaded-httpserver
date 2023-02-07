@@ -392,10 +392,11 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
   }
 
-  ctr = 0;
+  int ctr = 0;
   char put_buf[4096] = "";
   while (ctr < (bytes_read - req.off_set)){
     put_buf[ctr] = buffer[req.off_set + ctr];
+    ctr+=1;
   }
 
   if (req.length < (bytes_read - req.off_set)){
@@ -444,7 +445,7 @@ void handle_connection(int connfd){
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
         
-        Put(connfd, req.uri, req, bytes_read);
+        Put(connfd, req.uri, req, buffer ,bytes_read);
 
 
     }
