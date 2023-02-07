@@ -369,6 +369,8 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
   strcpy(res.status_phrase, "");
   strcpy(res.version, "");
 
+  strcpy(res.version, "HTTP/1.1");
+
 
 
   if(access(file, F_OK) == 0){
@@ -378,7 +380,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
     res.length = 3;
     strcpy(res.message, "OK\n");
     strcpy(res.header, "Content-Length");
-    strcpy(res.version, "HTTP/1.1");
+    
 
   }
   else{
@@ -388,7 +390,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
     res.length = 8;
     strcpy(res.message, "created\n");
     strcpy(res.header, "Content-Length");
-    strcpy(res.version, "HTTP/1.1");
+    
 
   }
 
@@ -407,13 +409,13 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
       errx(1, "fail in writing\n");
     }
     
+  close(fd);
 
   //  dprintf(connfd, "Write done\n");
   dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n%s\n", res.version,
          res.status_code, res.status_phrase, res.header, res.length, res.message
           );
 
-    close(fd);
 
   }
   
@@ -425,11 +427,13 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
     
     pass_bytes(connfd, fd, req.length - written );
 
+    close(fd);
+
     dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n%s\n", res.version,
          res.status_code, res.status_phrase, res.header, res.length, res.message
           );
 
-    close(fd);
+
 
   }
 
