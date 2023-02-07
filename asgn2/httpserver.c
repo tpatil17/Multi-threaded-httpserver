@@ -394,6 +394,8 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
   }
 
+  dprintf(connfd, "req.len = %d\noff_set= %d\nbytes_read = %d\n", req.length, req.off_set, bytes_read);
+
   
   if (req.length <= (bytes_read - req.off_set)){
 
