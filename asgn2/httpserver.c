@@ -338,8 +338,8 @@ struct Request process_request(char req_buffer[]){
     strcpy(res.status_phrase, "OK");
     res.length = strlen("OK\n");
     strcpy(res.header, "Content-Length");
-    strcpy(res.message, "OK\n");
-    dprintf(connfd, "%s %d %s\r\n%s: %d\r\n\r\n%s", res.version,
+    strcpy(res.message, "OK");
+    dprintf(connfd, "%s %d %s\r\n%s: %d\r\n\r\n%s\n", res.version,
             res.status_code, res.status_phrase, res.header, res.length,
             res.message);
     //write_all(connfd, resp_buffer, strlen(resp_buffer));
