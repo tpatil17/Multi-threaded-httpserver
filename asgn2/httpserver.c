@@ -313,42 +313,27 @@ struct Request process_request(char req_buffer[]){
 
     fd = open(file, O_RDONLY);
 
-    //char resp_buffer[4096] = "";
+  
 
     if(fd < 0){
         errx(EXIT_FAILURE, "File did not open succesfully");
     }
-    //int read_file = 0;
-
-    //char file_content[4096] = "";
-
-
-    // while((read_file = read(fd, file_content, 4095)) > 0){
-
-    //     if (write(connfd, file_content, read_file) < 0){
-    //         errx(EXIT_FAILURE, "write error");
-            
-    //     }
-
-    //     strcpy(file_content, ""); //reset buffer to empty state 
-    // }
+   
 
     res.status_code = 200;
     strcpy(res.version, "HTTP/1.1");
     strcpy(res.status_phrase, "OK");
     res.length = size;
     strcpy(res.header, "Content-Length");
-    //strcpy(res.message, "OK");
+
     dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n", res.version,
             res.status_code, res.status_phrase, res.header, res.length
             );
-    //write_all(connfd, resp_buffer, strlen(resp_buffer));
-
-    //strcpy(resp_buffer, "");
+   
     strcpy(res.status_phrase, "");
     strcpy(res.message, "");
 
-    //dprintf(connfd, "Yes does move on after writing response\n" );
+   
 
     int passed;
     if((passed = pass_bytes(fd, connfd, size)) < 0){
