@@ -455,8 +455,10 @@ void handle_connection(int connfd){
 
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
+
+      dprintf(connfd, "No problem here lets try to execute function put\n");
         
-        Put(connfd, req.uri, req, buffer ,bytes_read);
+      Put(connfd, req.uri, req, buffer ,bytes_read);
 
 
     }
