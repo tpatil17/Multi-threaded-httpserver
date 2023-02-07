@@ -336,7 +336,7 @@ struct Request process_request(char req_buffer[]){
     res.status_code = 200;
     strcpy(res.version, "HTTP/1.1");
     strcpy(res.status_phrase, "OK");
-    res.length = strlen("OK\n");
+    res.length = 10;
     strcpy(res.header, "Content-Length");
     strcpy(res.message, "OK");
     dprintf(connfd, "%s %d %s\r\n%s: %d\r\n\r\n%s\n", res.version,
