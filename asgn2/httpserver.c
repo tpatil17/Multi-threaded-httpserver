@@ -403,7 +403,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
   if (req.length <= (bytes_read - req.off_set)){
 
-   // dprintf(connfd, "HERE as expected\n");
+
 
     if ( (write_all(fd, put_buf, req.length)) < 0){
       errx(1, "fail in writing\n");
@@ -411,9 +411,9 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
     
   close(fd);
 
-  //  dprintf(connfd, "Write done\n");
-  dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n", res.version,
-         res.status_code, res.status_phrase, res.header, res.length
+ 
+  dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
+         res.status_code, res.status_phrase, res.header, res.length, res.message
           );
 
 
@@ -421,7 +421,6 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
   
   else{
 
-  //  dprintf(connfd, "should not venture here\n");
 
     int written = write_all(fd, put_buf, bytes_read - req.off_set);
     
@@ -455,15 +454,14 @@ void handle_connection(int connfd){
     //int val = -1;
 
     if ((strcmp(req.method, "GET") == 0 )| (strcmp(req.method, "get") == 0)){
-        //printf("request processed succesfully, implement get\n");
-        //write(connfd,"get is the method to be implemented\n", strlen("get is the method to be implemented\n") );
+
         
-        Get(req.uri, connfd);
+      Get(req.uri, connfd);
 
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
 
-      //dprintf(connfd, "No problem here lets try to execute function put\n");
+     
         
       Put(connfd, req.uri, req, buffer ,bytes_read);
 
@@ -502,13 +500,13 @@ int main(int argc, char *argv[]){
 
     while(1){
         int connfd = listener_accept(&sock);
-        //dprintf(connfd, "no problem\n");
+     
         if(connfd < 0){
             warn("Accept Error");
             continue;
         
         }
-        //dprintf(connfd, "handle_connection");
+        
         handle_connection(connfd);
 
         
