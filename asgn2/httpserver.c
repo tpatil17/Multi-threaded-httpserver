@@ -311,7 +311,19 @@ struct Request process_request(char req_buffer[]){
 
     char file_content[4096] = "";
 
-    res.status_code = 200;
+
+    while((read_file = read(fd, file_content, 4095)) > 0){
+
+        if (write(connfd, file_content, read_file) < 0){
+            errx(EXIT_FAILURE, "write error");
+            
+        }
+
+        strcpy(file_content, ""); //reset buffer to empty state 
+    }
+    close(fd);
+
+        res.status_code = 200;
     strcpy(res.version, "HTTP/1.1");
     strcpy(res.status_phrase, "OK");
     res.length = strlen("OK\n");
@@ -326,16 +338,6 @@ struct Request process_request(char req_buffer[]){
     strcpy(res.status_phrase, "");
     strcpy(res.message, "");
 
-    while((read_file = read(fd, file_content, 4095)) > 0){
-
-        if (write(connfd, file_content, read_file) < 0){
-            errx(EXIT_FAILURE, "write error");
-            
-        }
-
-        strcpy(file_content, ""); //reset buffer to empty state 
-    }
-    close(fd);
     return 0;
 }
 
