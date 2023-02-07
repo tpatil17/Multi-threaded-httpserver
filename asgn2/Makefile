@@ -2,7 +2,7 @@ CC	=	clang
 
 CFLAGS	=	-g	-Wall	-Wextra	-Werror	-pedantic -pthread
 
-TARGET	=	scaffold
+TARGET	=	httpserver
 
 all:$(TARGET)
 	
