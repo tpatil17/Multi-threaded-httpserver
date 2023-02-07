@@ -397,10 +397,10 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
   
   if (req.length <= (bytes_read - req.off_set)){
 
-    int ctr = 1;
+    int ctr = 0;
     char put_buf[4096] = "";
     while (ctr < (bytes_read - req.off_set)){
-    put_buf[ctr] = buffer[req.off_set + ctr];
+    put_buf[ctr] = buffer[req.off_set + (ctr + 1)];
     ctr+=1;
     } 
 
@@ -423,7 +423,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
   else{
 
 
-    int ctr = 1;
+    int ctr = 0;
     char put_buf[4096] = "";
      while (ctr < (bytes_read - req.off_set)){
     put_buf[ctr] = buffer[req.off_set + ctr];
