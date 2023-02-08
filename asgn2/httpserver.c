@@ -135,11 +135,12 @@ struct Request process_request(char req_buffer[]){
     strcpy(p_buf, "");
     return req;
   }
-    if (strcmp(req.version, "HTTP/1.1")!= 0){
+  if (strcmp(req.version, "HTTP/1.1")!= 0){
       dprintf(STDERR_FILENO, "Wrong version rightly identified new\n");
       req.err_flag = 5;
       return req;
-    }
+  }
+  
 
   
 
@@ -495,6 +496,14 @@ void handle_connection(int connfd){
 
     }
     if(req.err_flag == 5){
+      char num1[10] = "";
+      char num2[10] = "";
+      sscanf(req.version, "HTTP/%s.%s",num1 ,num2);
+      if(strlen(num1) > 1 | strlen(num2) > 1){
+
+        dprintf(connfd, "HTTP/1.1 400 Bad Request\r\nContent-Length: 12\r\n\r\nBad Request\n");
+      }
+      
       dprintf(connfd, "HTTP/1.1 505 Version Not Supported\r\nContent-Length: 22\r\n\r\nVersion Not Supported\n");
       return;
     }
@@ -527,12 +536,6 @@ void handle_connection(int connfd){
 
 
     }
-    else{
-
-      dprintf(connfd, "HTTP/1.1 501 Not Implemented\r\nContent-Length: 15\r\n\r\nNot Implemented\n");
-      
-    }
-
 
     return;
 
