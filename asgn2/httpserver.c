@@ -500,7 +500,7 @@ void handle_connection(int connfd){
       char num2[10] = "";
       sscanf(req.version, "HTTP/%s.%s",num1 ,num2);
 
-      dprintf(STDERR_FILENO, "num1: %s , num2: %s, len num1: %d , len num2: %d\n", num1, num2, strlen(num1), strlen(num2));
+      dprintf(STDERR_FILENO, "num1: %s , num2: %s, len num1: %lu , len num2: %lu\n", num1, num2, strlen(num1), strlen(num2));
 
       if(strlen(num1) != 2 | strlen(num2) != 1){
 
