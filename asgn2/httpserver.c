@@ -500,9 +500,12 @@ void handle_connection(int connfd){
       char num2[10] = "";
       sscanf(req.version, "HTTP/%s.%s",num1 ,num2);
 
+      dprintf(STDERR_FILENO, "%s %s", num1, num2);
+
       if(strlen(num1) != 1 | strlen(num2) != 1){
 
         dprintf(connfd, "HTTP/1.1 400 Bad Request\r\nContent-Length: 12\r\n\r\nBad Request\n");
+        return;
       }
       
       dprintf(connfd, "HTTP/1.1 505 Version Not Supported\r\nContent-Length: 22\r\n\r\nVersion Not Supported\n");
