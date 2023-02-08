@@ -141,14 +141,6 @@ struct Request process_request(char req_buffer[]){
       return req;
   }
 
-  if(strcmp(req.method, "GET") != 0 | strcmp(req.method, "get") !=0){
-    if(strcmp(req.method, "PUT") !=0 | strcmp(req.method, "put") != 0){
-      req.err_flag = 501;
-      return req;
-    }
-  }
-  
-
   
 
   token = strtok(NULL, delim);
