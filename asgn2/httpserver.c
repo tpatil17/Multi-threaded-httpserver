@@ -80,7 +80,7 @@ struct Request process_request(char req_buffer[]){
 
   int ctr = 0;
 
-  req.size = strlen(req_buffer);
+  req.size = strlen(req_buffer); // Is not always a string !!!
 
   token = strtok(req_buffer, delim);
 
@@ -391,8 +391,8 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
     int ctr = 0;
     char put_buf[4096] = "";
-    while (ctr < (bytes_read - req.off_set)){
-    put_buf[ctr] = buffer[(req.off_set-2) + ctr];
+    while (ctr <= (bytes_read - req.off_set)){
+    put_buf[ctr] = buffer[(req.off_set-1) + ctr];
     ctr+=1;
     } 
 
@@ -402,10 +402,10 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
       errx(1, "fail in writing\n");
     }
     //strcpy(put_buf, "");
-  close(fd);
+    close(fd);
 
  
-  dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
+    dprintf(connfd, "%s %d %s\r\n%s: %ld\r\n\r\n%s", res.version,
          res.status_code, res.status_phrase, res.header, res.length, res.message
           );
 
@@ -417,8 +417,8 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
     int ctr = 0;
     char put_buf[4096] = "";
-    while (ctr < (bytes_read - req.off_set)){
-    put_buf[ctr] = buffer[(req.off_set-2) + ctr];
+    while (ctr <= (bytes_read - req.off_set)){
+    put_buf[ctr] = buffer[(req.off_set-1) + ctr];
     ctr+=1;
     }
 
