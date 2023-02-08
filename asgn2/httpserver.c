@@ -496,13 +496,13 @@ void handle_connection(int connfd){
 
     }
     if(req.err_flag == 5){
-      char num1[10] = "";
-      char num2[10] = "";
-      sscanf(req.version, "HTTP/%s.%s",num1 ,num2);
+      int num1, num2;
+  
+      sscanf(req.version, "HTTP/%d.%d",&num1 ,&num2);
 
-      dprintf(STDERR_FILENO, "num1: %s , num2: %s, len num1: %lu , len num2: %lu\n", num1, num2, strlen(num1), strlen(num2));
+      //dprintf(STDERR_FILENO, "num1: %s , num2: %s, len num1: %lu , len num2: %lu\n", num1, num2, strlen(num1), strlen(num2));
 
-      if(strlen(num1) != 2 | strlen(num2) != 1){
+      if(num1 >= 10 | num2 >= 10){
 
         dprintf(connfd, "HTTP/1.1 400 Bad Request\r\nContent-Length: 12\r\n\r\nBad Request\n");
         return;
