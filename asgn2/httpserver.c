@@ -391,7 +391,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
   stat(file, &ln);
 
-  if(S_ISDIR(st.st_mode)){
+  if(S_ISDIR(ln.st_mode)){
     return 4;
   }
   
