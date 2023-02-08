@@ -322,8 +322,7 @@ struct Request process_request(char req_buffer[]){
 
       return 3;
     }
-    if (S_ISREG(st.st_mode) != 0){
-
+    if (access(file, R_OK) != 0){
       return 4;
     }
     
@@ -382,11 +381,11 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
 
   if(access(file, F_OK) == 0){
-    if(S_ISREG(ln.st_mode) == 0 | access(file, W_OK) != 0){
 
+    if(access(file, W_OK)!= 0){
       return 4;
-    
     }
+   
     fd = open(file, O_WRONLY | O_TRUNC);
     res.status_code = 200;
     strcpy(res.status_phrase, "OK");
@@ -398,6 +397,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
   }
 
   else{
+
     fd = open(file, O_WRONLY | O_CREAT, 0777);
     res.status_code = 201;
     strcpy(res.status_phrase, "Created");
