@@ -1,6 +1,6 @@
 CC	=	clang
 
-CFLAGS	=	-g	-Wall	-Wextra	-Werror	-pedantic -pthread
+CFLAGS	=	-gdwarf-4	-Wall	-Wextra	-Werror	-pedantic -pthread
 
 TARGET	=	httpserver
 
