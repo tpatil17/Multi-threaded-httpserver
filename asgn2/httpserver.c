@@ -499,7 +499,8 @@ void handle_connection(int connfd){
       char num1[10] = "";
       char num2[10] = "";
       sscanf(req.version, "HTTP/%s.%s",num1 ,num2);
-      if(strlen(num1) > 1 | strlen(num2) > 1){
+
+      if(strlen(num1) != 1 | strlen(num2) != 1){
 
         dprintf(connfd, "HTTP/1.1 400 Bad Request\r\nContent-Length: 12\r\n\r\nBad Request\n");
       }
