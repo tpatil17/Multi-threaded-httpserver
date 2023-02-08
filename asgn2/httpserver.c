@@ -335,7 +335,7 @@ struct Request process_request(char req_buffer[]){
     if (access(file, R_OK) != 0){
       return 4;
     }
-    if(S_ISDIR(st.st_mode) == 0){
+    if(S_ISDIR(st.st_mode) != 0){
       return 4;
     }
     
