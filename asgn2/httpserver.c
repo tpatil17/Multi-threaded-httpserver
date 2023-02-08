@@ -105,7 +105,9 @@ struct Request process_request(char req_buffer[]){
     sscanf(p_buf, "%s %s %s", req.method, req.uri, req.version);
 
     if (strcmp(req.version, "HTTP/1.1")!= 0){
+      dprintf(STDERR_FILENO, "Wrong version rightly identified\n")
       req.err_flag = 5;
+      return req;
     }
 
     if (strcmp(req.uri, "/") == 0 && strcmp(req.version, "HTTP/1.1") == 0) {
@@ -114,6 +116,7 @@ struct Request process_request(char req_buffer[]){
       req.err_flag = 2;
 
       strcpy(p_buf, "");
+      dprintf(STDERR_FILENO, "At flag 2 in process request\n");
       return req;
     }
 
