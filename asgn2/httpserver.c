@@ -496,6 +496,7 @@ void handle_connection(int connfd){
     }
     if(req.err_flag == 5){
       dprintf(connfd, "HTTP/1.1 505 Version Not Supported\r\nContent-Length: 22\r\n\r\nVersion Not Supported\n");
+      return;
     }
     
 
