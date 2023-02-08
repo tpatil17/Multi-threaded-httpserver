@@ -143,7 +143,7 @@ struct Request process_request(char req_buffer[]){
 
   dprintf(STDERR_FILENO, "%s\n", req.method);
 
-  if((strcmp(req.method, "GET") != 0 | strcmp(req.method, "get") != 0) & (strcmp(req.method, "PUT") != 0 | strcmp(req.method, "put") != 0)){
+  if(!((strcmp(req.method, "GET") == 0 | strcmp(req.method, "get") == 0) || (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0))){
     req.err_flag = 501;
     return req;
   }
