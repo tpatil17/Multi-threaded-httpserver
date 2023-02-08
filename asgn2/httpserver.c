@@ -283,6 +283,7 @@ struct Request process_request(char req_buffer[]){
 
     req.off_set -= 4;
   }
+  req.off_set+=1;
   if (req.off_set > 2048){
     req.err_flag = 7;
   }
