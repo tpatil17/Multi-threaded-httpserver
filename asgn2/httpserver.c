@@ -502,7 +502,7 @@ void handle_connection(int connfd){
 
       dprintf(STDERR_FILENO, "%s %s", num1, num2);
 
-      if(strlen(num1) != 1 | strlen(num2) != 1){
+      if(strlen(num1) != 2 | strlen(num2) != 1){
 
         dprintf(connfd, "HTTP/1.1 400 Bad Request\r\nContent-Length: 12\r\n\r\nBad Request\n");
         return;
