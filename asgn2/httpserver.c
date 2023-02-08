@@ -44,7 +44,7 @@ struct Request
     char header[50];
     char value[50];
     int off_set;
-    int err_flag; // 1: Bad Request, 2: Internal Server Error, 3: File not Found
+    int err_flag; // 1: Bad Request, 2: Internal Server Error, 3: File not Found , 4: Forbidden, 5: version not imp
     int length;
     int size;
 
@@ -103,6 +103,10 @@ struct Request process_request(char req_buffer[]){
     strcpy(req.uri, "");
 
     sscanf(p_buf, "%s %s %s", req.method, req.uri, req.version);
+
+    if (strcmp(req.version, "HTTP/1.1")!= 0){
+      req.err_flag = 5;
+    }
 
     if (strcmp(req.uri, "/") == 0 && strcmp(req.version, "HTTP/1.1") == 0) {
 
@@ -302,7 +306,7 @@ struct Request process_request(char req_buffer[]){
 
     struct Response res;
 
-    struct stat st;
+    struct stat st = {0};
 
     stat(file, &st);
     int size = st.st_size;
@@ -313,12 +317,20 @@ struct Request process_request(char req_buffer[]){
     strcpy(res.header, "");
     strcpy(res.version, "");
 
+
+    if (access(file, F_OK) != 0){
+
+      return 3;
+    }
+    if (S_ISREG(st.st_mode) != 0){
+
+      return 4;
+    }
+    
     fd = open(file, O_RDONLY);
 
-  
-
     if(fd < 0){
-        errx(EXIT_FAILURE, "File did not open succesfully");
+      return 4;
     }
    
 
@@ -355,6 +367,11 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
   int fd;
 
+  struct stat ln = {0};
+
+  stat(file, &ln);
+  
+
   strcpy(res.header, "");
   strcpy(res.message, "");
   strcpy(res.status_phrase, "");
@@ -365,6 +382,11 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
 
 
   if(access(file, F_OK) == 0){
+    if(S_ISREG(ln.st_mode) == 0 | access(file, W_OK) != 0){
+
+      return 4;
+    
+    }
     fd = open(file, O_WRONLY | O_TRUNC);
     res.status_code = 200;
     strcpy(res.status_phrase, "OK");
@@ -374,6 +396,7 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
     
 
   }
+
   else{
     fd = open(file, O_WRONLY | O_CREAT, 0777);
     res.status_code = 201;
@@ -454,21 +477,49 @@ void handle_connection(int connfd){
     struct Request req;
 
     req = process_request(buffer);
-    //int val = -1;
+
+    if(req.err_flag == 1){
+      // bad request
+      dprintf(connfd, "HTTP/1.1 400 Bad Request\r\nContent-Length: 12\r\n\r\nBad Request\n");
+      return;
+
+    }
+    if(req.err_flag == 5){
+      dprintf(connfd, "HTTP/1.1 505 Version Not Supported\r\nContent-Length: 22\r\n\r\nVersion Not Supported\n");
+    }
+    
 
     if ((strcmp(req.method, "GET") == 0 )| (strcmp(req.method, "get") == 0)){
 
-        
-      Get(req.uri, connfd);
-
+      int num;  
+      num = Get(req.uri, connfd);
+      if(num == 3){
+        dprintf(connfd, "HTTP/1.1 404 Not Found\r\nContent-Length: 10\r\n\r\nNot Found\n");
+      }
+      if(num == 4){
+        dprintf(connfd, "HTTP/1.1 403 Forbidden\r\nContent-Length: 9\r\n\r\nForbidden\n");
+      }
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
 
      
-        
-      Put(connfd, req.uri, req, buffer ,bytes_read);
+      int num;
+
+      num = Put(connfd, req.uri, req, buffer ,bytes_read);
+
+      if(num == 3){
+        dprintf(connfd, "HTTP/1.1 404 Not Found\r\nContent-Length: 10\r\n\r\nNot Found\n");
+      }
+      if(num == 4){
+        dprintf(connfd, "HTTP/1.1 403 Forbidden\r\nContent-Length: 9\r\n\r\nForbidden\n");
+      }
 
 
+    }
+    else{
+
+      dprintf(connfd, "HTTP/1.1 501 Not Implemented\r\nContent-Length: 15\r\n\r\nNot Implemented\n");
+      
     }
 
 
