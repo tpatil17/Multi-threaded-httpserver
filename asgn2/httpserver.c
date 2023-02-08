@@ -135,6 +135,13 @@ struct Request process_request(char req_buffer[]){
     strcpy(p_buf, "");
     return req;
   }
+    if (strcmp(req.version, "HTTP/1.1")!= 0){
+      dprintf(STDERR_FILENO, "Wrong version rightly identified new\n")
+      req.err_flag = 5;
+      return req;
+    }
+
+  
 
   token = strtok(NULL, delim);
 
