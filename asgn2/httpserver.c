@@ -140,6 +140,13 @@ struct Request process_request(char req_buffer[]){
       req.err_flag = 5;
       return req;
   }
+
+  if(strcmp(req.method, "GET") != 0 | strcmp(req.method, "get") !=0){
+    if(strcmp(req.method, "PUT") !=0 | strcmp(req.method, "put") != 0){
+      req.err_flag = 501;
+      return req;
+    }
+  }
   
 
   
@@ -336,6 +343,9 @@ struct Request process_request(char req_buffer[]){
     if (access(file, R_OK) != 0){
       return 4;
     }
+    if(S_ISDIR(st.st_mode) == 0){
+      return 4;
+    }
     
     fd = open(file, O_RDONLY);
 
@@ -380,6 +390,10 @@ int Put(int connfd, char file[], struct Request req, char buffer[], int bytes_re
   struct stat ln = {0};
 
   stat(file, &ln);
+
+  if(S_ISDIR(st.st_mode)){
+    return 4;
+  }
   
 
   strcpy(res.header, "");
@@ -510,6 +524,10 @@ void handle_connection(int connfd){
       
       dprintf(connfd, "HTTP/1.1 505 Version Not Supported\r\nContent-Length: 22\r\n\r\nVersion Not Supported\n");
       return;
+    }
+    if (req.err_flag == 501){
+
+      dprintf(connfd, "HTTP/1.1 501 Not Implemented\r\nContent-Length: 16\r\n\r\nNot Implemented\n");
     }
     
 
