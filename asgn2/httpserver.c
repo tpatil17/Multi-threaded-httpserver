@@ -141,7 +141,7 @@ struct Request process_request(char req_buffer[]){
       return req;
   }
 
-  
+  dprintf(STDERR_FILENO, "%s\n", req.method);
 
   token = strtok(NULL, delim);
 
@@ -520,6 +520,7 @@ void handle_connection(int connfd){
     if (req.err_flag == 501){
 
       dprintf(connfd, "HTTP/1.1 501 Not Implemented\r\nContent-Length: 16\r\n\r\nNot Implemented\n");
+      return;
     }
     
 
@@ -531,7 +532,7 @@ void handle_connection(int connfd){
         dprintf(connfd, "HTTP/1.1 404 Not Found\r\nContent-Length: 10\r\n\r\nNot Found\n");
       }
       if(num == 4){
-        dprintf(connfd, "HTTP/1.1 403 Forbidden\r\nContent-Length: 9\r\n\r\nForbidden\n");
+        dprintf(connfd, "HTTP/1.1 403 Forbidden\r\nContent-Length: 10\r\n\r\nForbidden\n");
       }
     }
     if (strcmp(req.method, "PUT") == 0 | strcmp(req.method, "put") == 0){
