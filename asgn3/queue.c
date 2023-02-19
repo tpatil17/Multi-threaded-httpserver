@@ -37,12 +37,12 @@ queue_t* queue_new(int size){
 
 void queue_delete(struct queue **q){
 
-    while(q->head != NULL){
-        Node *temp = q->head;
-        q->head = q->head->next;
+    while(&q->head != NULL){
+        Node *temp = &q->head;
+        &q->head = &q->head->next;
         free(temp);
-        if(q->head == NULL){
-            q->tail == NULL;
+        if(&q->head == NULL){
+            &q->tail == NULL;
         }
 
     }
