@@ -81,7 +81,7 @@ bool queue_pop(queue_t *q, void **elem){
     if(q->head == NULL){
         fprintf(stderr, "queue is empty");
     }
-    **elem = q->head;
+    *elem = q->head;
     Node *temp = q->head;
     q->head = q->head->next;
     free(temp);
