@@ -1,0 +1,93 @@
+#include "queue.h"
+#include<stdio.h>
+#include<string.h>
+#include<pthread.h>
+#include<stdlib.h>
+
+typedef struct Node
+{
+    int data;
+    struct Node *next;
+    
+}Node;
+
+
+typedef struct queue
+{
+    Node *head;
+    Node *tail;
+    int size;
+    
+}queue;
+
+queue_t* queue_new(int size){
+
+    queue_t *q = malloc(sizeof(queue));
+
+    if(q == NULL){
+        fprintf(stderr, "Problem in allocating memory for queue\n");
+        exit(1);
+    } 
+    q->head = NULL;
+    q->tail = NULL;
+    q->size = size;
+
+    return q;
+}
+
+void queue_delete(queue **q){
+
+    while(q->head != NULL){
+        Node *temp = q->head;
+        q->head = q->head->next;
+        free(temp);
+        if(q->head == NULL){
+            q->tail == NULL;
+        }
+
+    }
+    free(q);
+    *q = NULL;
+}
+
+bool push(queue_t *q, void *elem){
+
+    if(q == NULL){
+        return false;
+    }
+
+    Node *new = malloc(sizeof(Node));
+    if(new == NULL){
+        fprintf(stderr, "Failed to allocate memory to node\n");
+        exit(1);
+    }
+    new->data = elem;
+    new->next = NULL;
+
+    if(q->tail == NULL){
+        q->head = new;
+        q->tail = new;
+    }
+    else{
+        q->tail->next = new;
+        q->tail = new;
+    }
+
+    return true;
+
+}
+
+bool pop(queue_t *q){
+    if(q->head == NULL){
+        fprintf(stderr, "queue is empty");
+    }
+    Node *temp = q->head;
+    q->head = q->head->next;
+    free(temp);
+    if(q->head == NULL){
+        q->tail = NULL;
+    }
+
+    return true;
+}
+
