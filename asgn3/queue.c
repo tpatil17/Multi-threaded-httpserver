@@ -9,10 +9,10 @@ typedef struct Node
     int data;
     struct Node *next;
     
-}Node;
+} Node;
 
 
-typedef struct queue
+struct queue
 {
     Node *head;
     Node *tail;
@@ -22,7 +22,7 @@ typedef struct queue
 
 queue_t* queue_new(int size){
 
-    queue_t *q = malloc(sizeof(queue));
+    queue_t *q = malloc(sizeof(struct queue));
 
     if(q == NULL){
         fprintf(stderr, "Problem in allocating memory for queue\n");
@@ -35,7 +35,7 @@ queue_t* queue_new(int size){
     return q;
 }
 
-void queue_delete(queue **q){
+void queue_delete(struct queue **q){
 
     while(q->head != NULL){
         Node *temp = q->head;
