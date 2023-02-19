@@ -7,7 +7,7 @@ TARGET	=	queue
 all:$(TARGET).o
 	
 $(TARGET).o:	$(TARGET).c $(TARGET).h
-	$(CC)	$(CFLAGS)	-o	$(TARGET)	$(TARGET).c 
+	$(CC)	$(CFLAGS)	-c	$(TARGET)	$(TARGET).c 
 
 clean:	
 	rm	-f	$(TARGET).o
