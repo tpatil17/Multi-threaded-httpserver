@@ -37,12 +37,12 @@ queue_t* queue_new(int size){
 
 void queue_delete(struct queue **q){
 
-    while(*q->head != NULL){
-        Node *temp = *q->head;
-        *q->head = *q->head->next;
+    while((*q)->head != NULL){
+        Node *temp = (*q)->head;
+        (*q)->head = (*q)->head->next;
         free(temp);
-        if(*q->head == NULL){
-            *q->tail == NULL;
+        if((*q)->head == NULL){
+            (*q)->tail == NULL;
         }
 
     }
@@ -50,7 +50,7 @@ void queue_delete(struct queue **q){
     *q = NULL;
 }
 
-bool push(queue_t *q, void *elem){
+bool queue_push(queue_t *q, void *elem){
 
     if(q == NULL){
         return false;
@@ -77,10 +77,11 @@ bool push(queue_t *q, void *elem){
 
 }
 
-bool pop(queue_t *q){
+bool queue_pop(queue_t *q, void **elem){
     if(q->head == NULL){
         fprintf(stderr, "queue is empty");
     }
+    elem = q->head
     Node *temp = q->head;
     q->head = q->head->next;
     free(temp);
