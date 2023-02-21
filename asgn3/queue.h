@@ -19,7 +19,6 @@
  */
 typedef struct queue queue_t;
 
-
 /** @brief Dynamically allocates and initializes a new queue with a
  *         maximum size, size
  *
@@ -38,7 +37,6 @@ queue_t *queue_new(int size);
  */
 void queue_delete(queue_t **q);
 
-
 /** @brief push an element onto a queue
  *
  *  @param q the queue to push an element into.
@@ -50,7 +48,6 @@ void queue_delete(queue_t **q);
  */
 bool queue_push(queue_t *q, void *elem);
 
-
 /** @brief pop an element from a queue.
  *
  *  @param q the queue to pop an element from.
@@ -61,4 +58,3 @@ bool queue_push(queue_t *q, void *elem);
  *          should succeed unless the q parameter is NULL.
  */
 bool queue_pop(queue_t *q, void **elem);
-
