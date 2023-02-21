@@ -3,6 +3,8 @@
 #include<string.h>
 #include<pthread.h>
 #include<stdlib.h>
+#include<semaphore.h>
+
 
 typedef struct Node
 {
@@ -17,6 +19,9 @@ struct queue
     Node *head;
     Node *tail;
     int size;
+    sem_t *full;
+    sem_t *empty;
+    sem_t *mutex;
     
 }queue;
 
@@ -31,6 +36,12 @@ queue_t* queue_new(int size){
     q->head = NULL;
     q->tail = NULL;
     q->size = size;
+    q->empty = (sem_t *)malloc(sizeof(sem_t));
+    q->full = (sem_t *)malloc(sizeof(sem_t));
+    q->mutex = (sem_t *)malloc(sizeof(sem_t));
+    sem_init(q->empty, 0, 0);
+    sem_init(q->full, 0, size);
+    sem_init(q->mutex, 0, 1);
 
     return q;
 }
@@ -46,15 +57,20 @@ void queue_delete(struct queue **q){
         }
 
     }
+    sem_destroy(*q->mutex);
+    sem_destroy(*q->full);
+    sem_destroy(*q->empty);
+    free(*q->empty);
+    free(*q->full);
+    free(*q->mutex);
     free(*q);
     *q = NULL;
 }
 
 bool queue_push(queue_t *q, void *elem){
 
-    if(q == NULL){
-        return false;
-    }
+    sem_wait(q->full); //claim a spot
+    sem_wait(q->mutex);
 
     Node *new = malloc(sizeof(Node));
     if(new == NULL){
@@ -72,15 +88,17 @@ bool queue_push(queue_t *q, void *elem){
         q->tail->next = new;
         q->tail = new;
     }
+    sem_post(q->mutex);
+    sem_post(q->empty);
 
     return true;
 
 }
 
 bool queue_pop(queue_t *q, void **elem){
-    if(q->head == NULL){
-        fprintf(stderr, "queue is empty");
-    }
+    sem_wait(q->empty);
+    sem_wait(q->mutex);
+
     *elem = q->head->data;
     Node *temp = q->head;
     q->head = q->head->next;
@@ -88,7 +106,9 @@ bool queue_pop(queue_t *q, void **elem){
     if(q->head == NULL){
         q->tail = NULL;
     }
-
+    sem_post(q->mutex);
+    sem_post(q->full);
+    
     return true;
 }
 
