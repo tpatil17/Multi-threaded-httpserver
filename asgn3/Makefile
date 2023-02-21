@@ -2,22 +2,15 @@ CC	=	clang
 
 CFLAGS	=	-gdwarf-4	-Wall	-Wextra	-Werror	-pedantic -pthread
 
-TARGET	=	basic_push_pop
+TARGET	=	queue
 
-OBJECT	=	queue
-
-all:$(TARGET)	$(OBJECT)
+all:$(TARGET).o
 	
-$(OBJECT).o:	$(OBJECT).c $(OBJECT).h
-	$(CC)	$(CFLAGS)	-c	$(OBJECT).c
-
-$(TARGET):	$(TARGET).o	$(OBJECT).o
-	$(CC):	$(CFLAGS)	-o	$(TARGET)	$(TARGET).o	$(OBJECT).o
-
-$(TARGET).o:	$(TARGET).c $(OBJECT).h
-	$(CC)	$(CFLAGS)	-c	$(TARGET).c
-
+$(TARGET).o:	$(TARGET).c $(TARGET).h
+	$(CC)	$(CFLAGS)	-c	$(TARGET).c 
 
 clean:	
-	rm	-f	$(TARGET).o	$(OBJECT).o
+	rm	-f	$(TARGET).o
+	
+
 	
