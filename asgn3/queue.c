@@ -57,12 +57,12 @@ void queue_delete(struct queue **q){
         }
 
     }
-    sem_destroy(*q->mutex);
-    sem_destroy(*q->full);
-    sem_destroy(*q->empty);
-    free(*q->empty);
-    free(*q->full);
-    free(*q->mutex);
+    sem_destroy((*q)->mutex);
+    sem_destroy((*q)->full);
+    sem_destroy((*q)->empty);
+    free((*q)->empty);
+    free((*q)->full);
+    free((*q)->mutex);
     free(*q);
     *q = NULL;
 }
@@ -108,7 +108,7 @@ bool queue_pop(queue_t *q, void **elem){
     }
     sem_post(q->mutex);
     sem_post(q->full);
-    
+
     return true;
 }
 
