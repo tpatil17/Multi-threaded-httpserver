@@ -109,7 +109,7 @@ void handle_get(conn_t *conn) {
     if(fd < 0){
         if(access(uri, F_OK) != 0){
             res = &RESPONSE_NOT_FOUND;
-            goto = out;
+            goto out;
         }
         if(errno == EACCES || errno == EISDIR){
             res = &RESPONSE_FORBIDDEN;
@@ -124,14 +124,14 @@ void handle_get(conn_t *conn) {
     struct stat st = {0};
     stat(uri, &st);
 
-    int size = st.st_size;
+    uint64_t size = st.st_size;
 
     if(S_ISDIR(st.st_mode)!= 0){
         res = &RESPONSE_FORBIDDEN;
         goto out;
     }
 
-    res = conn_send_file(conn, fd);
+    res = conn_send_file(conn, fd, size);
 
     res = &RESPONSE_OK;
 
