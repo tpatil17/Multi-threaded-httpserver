@@ -7,7 +7,7 @@
 #include "connection.h"
 #include "response.h"
 #include "request.h"
-
+#include "debug.h"
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
