@@ -79,8 +79,8 @@ int main(int argc, char **argv) {
 
     while (1) {
         int connfd;
-        *connfd = listener_accept(&sock);
-        queue_push(task_queue, (void*)connfd); // Push the task to queue
+        connfd = listener_accept(&sock);
+        queue_push(task_queue, (void*)&connfd); // Push the task to queue
         //handle_connection(connfd);
         //close(connfd);
 
