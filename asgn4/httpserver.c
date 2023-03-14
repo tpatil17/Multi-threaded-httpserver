@@ -25,7 +25,7 @@ void handle_connection(int);
 void handle_get(conn_t *);
 void handle_put(conn_t *);
 void handle_unsupported(conn_t *);
-void worker_threads(void *);
+void *worker_threads();
 
 queue_t *task_queue = NULL;
 
@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 
     while (1) {
         int connfd = listener_accept(&sock);
-        queue_push(task_queue, connfd); // Push the task to queue
+        queue_push(task_queue, (void*)connfd); // Push the task to queue
         //handle_connection(connfd);
         //close(connfd);
 
@@ -88,9 +88,10 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-void * worker_threads(){
+void *worker_threads(){
     while(true){
-        int *conn = queue_pop(task_queue);
+        uintptr_t conn;
+        queue_pop(task_queue,(void **)&conn);
         handle_connection(conn);
         close(conn);
     }
@@ -184,7 +185,7 @@ void handle_get(conn_t *conn) {
     close(fd);
 
 out:
-    fprintf(STDERR_FILENO, "%GET,/%s,%p,%s\n", uri, res, Req_id);
+    fprintf(STDERR_FILENO, "GET,/%s,%p,%s\n", uri, res, Req_id);
     conn_send_response(conn, res);
 
 }
@@ -196,7 +197,7 @@ void handle_unsupported(conn_t *conn) {
     Request_t *method = conn_get_request(conn); // get the method
     char* req = conn_get_header(conn, "Request-Id");
     char *uri = conn_get_uri(conn);
-    fprintf(STDERR_FILENO, "%s,/%s,%p,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
+    fprintf(STDERR_FILENO, "%s,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
     
 }
@@ -236,6 +237,6 @@ void handle_put(conn_t *conn) {
 
 out:
     char *req = conn_get_header(conn, "Request-Id");
-    fprintf(STDOUT_FILENO, "PUT,/%s,%p,%s\n",uri, res, req);
+    fprintf(STDOUT_FILENO, "PUT,/%s,%s,%s\n",uri, res, req);
     conn_send_response(conn, res);
 }
