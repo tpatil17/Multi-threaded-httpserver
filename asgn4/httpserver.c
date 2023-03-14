@@ -16,7 +16,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <pthread.h>
+#include "queue.h"
 #include <sys/stat.h>
 
 void handle_connection(int);
@@ -24,6 +25,9 @@ void handle_connection(int);
 void handle_get(conn_t *);
 void handle_put(conn_t *);
 void handle_unsupported(conn_t *);
+void worker_threads(void *);
+
+queue_t *task_queue = NULL;
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -31,6 +35,23 @@ int main(int argc, char **argv) {
         fprintf(stderr, "usage: %s <port>\n", argv[0]);
         return EXIT_FAILURE;
     }
+
+    int threads;
+
+    if (argc == 3){
+        char *endptr = NULL;
+        threads = (int) strtoull(argv[2], &endptr, 10);
+        if (endptr && *endptr != '\0') {
+            warnx("invalid thread number: %s", argv[2]);
+            return EXIT_FAILURE;
+        }
+
+    }else if (argc == 2)
+    {
+        threads = 4;// Default number of threads is 4
+        
+    }
+    
 
     char *endptr = NULL;
     size_t port = (size_t) strtoull(argv[1], &endptr, 10);
@@ -43,13 +64,36 @@ int main(int argc, char **argv) {
     Listener_Socket sock;
     listener_init(&sock, port);
 
-    while (1) {
-        int connfd = listener_accept(&sock);
-        handle_connection(connfd);
-        close(connfd);
+    int j;
+
+    pthread_t thread_pool[threads]; // array of threads
+
+    for(j = 0; j < threads; j++){
+        pthread_create(&thread_pool[j], NULL, worker_threads, NULL);
     }
 
+    // initialize the queue
+
+    task_queue = queue_new(10);
+
+
+    while (1) {
+        int connfd = listener_accept(&sock);
+        queue_push(task_queue, connfd); // Push the task to queue
+        //handle_connection(connfd);
+        //close(connfd);
+
+    }
+    queue_delete(&task_queue);
     return EXIT_SUCCESS;
+}
+
+void * worker_threads(){
+    while(true){
+        int *conn = queue_pop(task_queue);
+        handle_connection(conn);
+        close(conn);
+    }
 }
 
 void handle_connection(int connfd) {
@@ -78,6 +122,8 @@ void handle_connection(int connfd) {
 void handle_get(conn_t *conn) {
 
     char *uri = conn_get_uri(conn);
+    char *Req_id = conn_get_header(conn, "Request-Id");
+
     debug("GET request not implemented. But, we want to get %s", uri);
 
     // What are the steps in here?
@@ -138,6 +184,7 @@ void handle_get(conn_t *conn) {
     close(fd);
 
 out:
+    fprintf(STDERR_FILENO, "%GET,/%s,%p,%s\n", uri, res, Req_id);
     conn_send_response(conn, res);
 
 }
@@ -146,7 +193,12 @@ void handle_unsupported(conn_t *conn) {
     debug("handling unsupported request");
 
     // send responses
+    Request_t *method = conn_get_request(conn); // get the method
+    char* req = conn_get_header(conn, "Request-Id");
+    char *uri = conn_get_uri(conn);
+    fprintf(STDERR_FILENO, "%s,/%s,%p,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
+    
 }
 
 void handle_put(conn_t *conn) {
@@ -183,5 +235,7 @@ void handle_put(conn_t *conn) {
     close(fd);
 
 out:
+    char *req = conn_get_header(conn, "Request-Id");
+    fprintf(STDOUT_FILENO, "PUT,/%s,%p,%s\n",uri, res, req);
     conn_send_response(conn, res);
 }
