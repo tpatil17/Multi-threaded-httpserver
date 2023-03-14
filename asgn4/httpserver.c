@@ -186,7 +186,7 @@ void handle_get(conn_t *conn) {
     close(fd);
 
 out:
-    fprintf(stderr, "GET,/%s,%p,%s\n", uri, res, Req_id);
+    fprintf(stderr, "GET,/%s,%s,%s\n", uri, res, Req_id);
     conn_send_response(conn, res);
 
 }
@@ -196,9 +196,10 @@ void handle_unsupported(conn_t *conn) {
 
     // send responses
     Request_t *method = conn_get_request(conn); // get the method
+    char *opr = &method;
     char* req = conn_get_header(conn, "Request-Id");
     char *uri = conn_get_uri(conn);
-    fprintf(stderr, "%s,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
+    fprintf(stderr, "%s,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, &req);
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
     
 }
@@ -238,6 +239,6 @@ void handle_put(conn_t *conn) {
 
 out:
     char *req = conn_get_header(conn, "Request-Id");
-    fprintf(stderr, "PUT,/%s,%s,%s\n",uri, res, req);
+    fprintf(stderr, "PUT,/%s,%s,%s\n",uri, res, &req);
     conn_send_response(conn, res);
 }
