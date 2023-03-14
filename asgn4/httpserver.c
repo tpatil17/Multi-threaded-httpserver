@@ -238,7 +238,7 @@ void handle_put(conn_t *conn) {
     close(fd);
 
 out:
-    char *req = conn_get_header(conn, "Request-Id");
+    const Request_t *req = conn_get_header(conn, "Request-Id");
     fprintf(stderr, "PUT,/%s,%s,%s\n",uri, res, &req);
     conn_send_response(conn, res);
 }
