@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
 
 
     while (1) {
-        int *connfd;
+        int connfd;
         connfd = listener_accept(&sock);
         queue_push(task_queue, connfd); // Push the task to queue
         //handle_connection(connfd);
@@ -186,7 +186,7 @@ void handle_get(conn_t *conn) {
     close(fd);
 
 out:
-    fprintf(STDERR_FILENO, "GET,/%s,%p,%s\n", uri, res, Req_id);
+    fprintf(stderr, "GET,/%s,%p,%s\n", uri, res, Req_id);
     conn_send_response(conn, res);
 
 }
@@ -198,7 +198,7 @@ void handle_unsupported(conn_t *conn) {
     Request_t *method = conn_get_request(conn); // get the method
     char* req = conn_get_header(conn, "Request-Id");
     char *uri = conn_get_uri(conn);
-    fprintf(STDERR_FILENO, "%s,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
+    fprintf(stderr, "%s,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
     
 }
@@ -238,6 +238,6 @@ void handle_put(conn_t *conn) {
 
 out:
     char *req = conn_get_header(conn, "Request-Id");
-    fprintf(STDOUT_FILENO, "PUT,/%s,%s,%s\n",uri, res, req);
+    fprintf(stderr, "PUT,/%s,%s,%s\n",uri, res, req);
     conn_send_response(conn, res);
 }
