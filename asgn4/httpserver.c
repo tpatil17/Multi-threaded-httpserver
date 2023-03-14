@@ -80,7 +80,8 @@ int main(int argc, char **argv) {
     while (1) {
         int connfd;
         connfd = listener_accept(&sock);
-        void *ptr = connfd;
+        void *ptr;
+        ptr  = connfd;
         queue_push(task_queue, ptr); // Push the task to queue
         //handle_connection(connfd);
         //close(connfd);
