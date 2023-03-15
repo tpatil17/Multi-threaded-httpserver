@@ -27,7 +27,7 @@ void handle_connection(int);
 void handle_get(conn_t *);
 void handle_put(conn_t *);
 void handle_unsupported(conn_t *);
-void *worker_threads(int);
+void *worker_threads();
 
 queue_t *task_queue = NULL;
 
@@ -110,11 +110,12 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-void *worker_threads(int i){
+void *worker_threads(){
     while(true){
-        fprintf(stderr, "thread %d is in\n", i);
+        fprintf(stderr, "thread is in\n");
         uintptr_t conn;
         queue_pop(task_queue,(void **)&conn);
+        fprintf(stderr, "queue pop is smooth\n");
         handle_connection(conn);
         close(conn);
     }
