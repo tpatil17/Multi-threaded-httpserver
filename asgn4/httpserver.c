@@ -67,16 +67,21 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    fprintf(stderr, "testing the file\n");
+
     uint16_t port = strtouint16(argv[optind]);
     if (port == 0) {
         errx(1, "bad port number: %s", argv[1]);
     }
 
+    fprintf(stderr, "does not seem to have problem in getting port Port: %d\n", port);
 
 
     signal(SIGPIPE, SIG_IGN);
     Listener_Socket sock;
     listener_init(&sock, port);
+
+    fprintf(stderr, "listener works\n");
 
     int j;
 
@@ -85,6 +90,8 @@ int main(int argc, char **argv) {
     for(j = 0; j < threads; j++){
         pthread_create(&thread_pool[j], NULL, worker_threads, NULL);
     }
+
+    fprintf(stderr, "threads have been created\n");
 
     // initialize the queue
 
