@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
     pthread_t thread_pool[threads]; // array of threads
 
     for(j = 0; j < threads; j++){
-        pthread_create(&thread_pool[j], NULL, worker_threads, j);
+        pthread_create(&thread_pool[j], NULL, worker_threads, NULL);
     }
 
     fprintf(stderr, "threads have been created\n");
