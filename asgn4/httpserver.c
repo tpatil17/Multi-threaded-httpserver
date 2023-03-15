@@ -260,7 +260,7 @@ out:
     }
 
     if (Req_id == NULL){
-        Req_id = '0';
+        Req_id = "0";
     }
     
     fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
@@ -280,7 +280,7 @@ void handle_unsupported(conn_t *conn) {
     int code = 501;
     
     if (req == NULL){
-        req = '0';
+        req = "0";
     }
     fprintf(stderr, "%s,/%s,%d,%s\n",opr, uri, code, req);
 
@@ -363,7 +363,7 @@ out:
         /* code */
     }
     if (Req_id == NULL){
-        Req_id = '0';
+        Req_id = "0";
     }
     
     
