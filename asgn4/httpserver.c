@@ -114,9 +114,7 @@ int main(int argc, char **argv) {
         void *ptr = (void *)&connfd;
         queue_push(task_queue, ptr); // Push the task to queue
         fprintf(stderr, "pushed the conn\n");
-        //handle_connection(connfd);
-        //close(connfd);
-
+        
     }
     return EXIT_SUCCESS;
 }
@@ -143,7 +141,7 @@ void handle_connection(int connfd) {
     if (res != NULL) {
         conn_send_response(conn, res);
     } else {
-        debug("%s", conn_str(conn));
+        //debug("%s", conn_str(conn));
         const Request_t *req = conn_get_request(conn);
         if (req == &REQUEST_GET) {
             handle_get(conn);
@@ -162,7 +160,7 @@ void handle_get(conn_t *conn) {
     char *uri = conn_get_uri(conn);
     //char *Req_id = conn_get_header(conn, "Request-Id");
 
-    debug("GET request not implemented. But, we want to get %s", uri);
+    //debug("GET request not implemented. But, we want to get %s", uri);
 
     // What are the steps in here?
 
@@ -187,7 +185,7 @@ void handle_get(conn_t *conn) {
     // (hint: checkout the conn_send_file function!)
 
     const Response_t *res = NULL;
-    debug("handling get requests for %s", uri);
+    //debug("handling get requests for %s", uri);
 
     int fd = open(uri, O_RDONLY);
     if(fd < 0){
@@ -222,20 +220,89 @@ void handle_get(conn_t *conn) {
     close(fd);
 
 out:
-    //fprintf(stderr, "GET,/%s,200,%s\n", uri,Req_id);
+    int code;
+    if(res == &RESPONSE_OK){
+        code = 200;
+
+    }else if (res == &RESPONSE_BAD_REQUEST)
+    {
+        code = 400;
+
+    }else if (res == &RESPONSE_FORBIDDEN)
+    {
+        
+        code = 403;/* code */
+    }else if (res == &RESPONSE_NOT_FOUND)
+    {
+        /* code */
+        code = 404;
+    }else if (res == &RESPONSE_INTERNAL_SERVER_ERROR)
+    {
+        /* code */
+        code = 500;
+
+    }else if (res == &RESPONSE_NOT_IMPLEMENTED)
+    {
+        /* code */
+        code = 501;
+
+    }else
+    {
+        code = 505;
+        /* code */
+    }
+    
+    
+    fprintf(stderr, "GET,/%s,%d,%s\n", uri,code,Req_id);
     conn_send_response(conn, res);
 
 }
 
 void handle_unsupported(conn_t *conn) {
-    debug("handling unsupported request");
+    //debug("handling unsupported request");
 
     // send responses
-   // Request_t *method = conn_get_request(conn); // get the method
-    //char *opr = &method;
-    //char* req = conn_get_header(conn, "Request-Id");
-    //char *uri = conn_get_uri(conn);
+    Request_t *method = conn_get_request(conn); // get the method
+    char *opr = request_get_str(method);
+    char* req = conn_get_header(conn, "Request-Id");
+    char *uri = conn_get_uri(conn);
     //fprintf(stderr, "Unnsu,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
+    int code;
+    
+    if(res == &RESPONSE_OK){
+        code = 200;
+
+    }else if (res == &RESPONSE_BAD_REQUEST)
+    {
+        code = 400;
+
+    }else if (res == &RESPONSE_FORBIDDEN)
+    {
+        
+        code = 403;/* code */
+    }else if (res == &RESPONSE_NOT_FOUND)
+    {
+        /* code */
+        code = 404;
+    }else if (res == &RESPONSE_INTERNAL_SERVER_ERROR)
+    {
+        /* code */
+        code = 500;
+
+    }else if (res == &RESPONSE_NOT_IMPLEMENTED)
+    {
+        /* code */
+        code = 501;
+
+    }else
+    {
+        code = 505;
+        /* code */
+    }
+    
+    
+    fprintf(stderr, "%s,/%s,%d,%s\n",opr, uri,code,Req_id);
+
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
     
 }
@@ -244,16 +311,16 @@ void handle_put(conn_t *conn) {
 
     char *uri = conn_get_uri(conn);
     const Response_t *res = NULL;
-    debug("handling put request for %s", uri);
+    //debug("handling put request for %s", uri);
 
     // Check if file already exists before opening it.
     bool existed = access(uri, F_OK) == 0;
-    debug("%s existed? %d", uri, existed);
+    //debug("%s existed? %d", uri, existed);
 
     // Open the file..
     int fd = open(uri, O_CREAT | O_TRUNC | O_WRONLY, 0600);
     if (fd < 0) {
-        debug("%s: %d", uri, errno);
+        //debug("%s: %d", uri, errno);
         if (errno == EACCES || errno == EISDIR || errno == ENOENT) {
             res = &RESPONSE_FORBIDDEN;
             goto out;
@@ -274,7 +341,48 @@ void handle_put(conn_t *conn) {
     close(fd);
 
 out:
-    //char *req = conn_get_header(conn, "Request-Id");
+    char *req = conn_get_header(conn, "Request-Id");
    // fprintf(stderr, "PUT,/%s,%s,%s\n",uri, res, req);
+    int code;
+
+    if(res == &RESPONSE_OK){
+        code = 200;
+    }
+    else if (res ==  &RESPONSE_CREATED)
+    {
+        /* code */
+        code = 201;
+    }
+    else if (res == &RESPONSE_BAD_REQUEST)
+    {
+        code = 400;
+
+    }else if (res == &RESPONSE_FORBIDDEN)
+    {
+        
+        code = 403;/* code */
+    }else if (res == &RESPONSE_NOT_FOUND)
+    {
+        /* code */
+        code = 404;
+    }else if (res == &RESPONSE_INTERNAL_SERVER_ERROR)
+    {
+        /* code */
+        code = 500;
+
+    }else if (res == &RESPONSE_NOT_IMPLEMENTED)
+    {
+        /* code */
+        code = 501;
+
+    }else
+    {
+        code = 505;
+        /* code */
+    }
+    
+    
+    fprintf(stderr, "PUT,/%s,%d,%s\n", uri ,code , req);
+
     conn_send_response(conn, res);
 }
