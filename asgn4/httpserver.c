@@ -264,7 +264,7 @@ out:
     }
     
     fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
-    fprintf(stdout, "%s,/%s,%d,%s\n",opr, uri, code, req);
+    fprintf(stdout, "GET,/%s,%d,%s\n", uri, code, Req_id);
 
     conn_send_response(conn, res);
 
@@ -372,7 +372,7 @@ out:
     
     
     fprintf(stderr, "PUT,/%s,%d,%s\n", uri ,code , Req_id);
-    fprintf(stdout, "%s,/%s,%d,%s\n",opr, uri, code, req);
+    fprintf(stdout, "PUT,/%s,%d,%s\n", uri, code , Req_id);
 
 
     conn_send_response(conn, res);
