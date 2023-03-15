@@ -110,8 +110,9 @@ int main(int argc, char **argv) {
     while (1) {
         int connfd;
         connfd = listener_accept(&sock);
+        void* ptr = (void *)connfd;
         fprintf(stderr, "The pushed value of conn: %d\n", connfd);
-        queue_push(task_queue, (void*)&connfd); // Push the task to queue
+        queue_push(task_queue, ptr); // Push the task to queue
         fprintf(stderr, "pushed the conn\n");
         //handle_connection(connfd);
         //close(connfd);
