@@ -135,7 +135,7 @@ void *worker_threads(){
         intptr_t conn = 0;
         queue_pop(task_queue,(void **)&conn);
         int connfd = *(int *)conn;
-        fprintf(stderr, "conn: %d\n", connfd);
+        fprintf(stderr, "conn: %ld\n", connfd);
         fprintf(stderr, "queue pop is smooth\n");
         handle_connection(connfd);
         close(connfd);
