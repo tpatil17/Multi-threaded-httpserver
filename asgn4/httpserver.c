@@ -85,6 +85,8 @@ int main(int argc, char **argv) {
 
     int j;
 
+    fprintf(stderr, "threads %d\n", threads);
+
     pthread_t thread_pool[threads]; // array of threads
 
     fprintf(stderr, "threads %d, a trial to see if thread pool is allocated\n", threads);
