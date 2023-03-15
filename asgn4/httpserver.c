@@ -44,6 +44,8 @@ static size_t strtouint16(char number[]) {
 
 
 int main(int argc, char **argv) {
+
+    fprintf(stdout, "Inside the main thread\n");
     
     
     int opt = 0;
@@ -63,6 +65,8 @@ int main(int argc, char **argv) {
             return 1;
         }
     }
+
+    fprintf(stdout, "terminal entries checked\n");
 
     if (optind >= argc) {
         warnx("wrong number of arguments");
@@ -84,6 +88,8 @@ int main(int argc, char **argv) {
     Listener_Socket sock;
     listener_init(&sock, port);
 
+    fprintf(stdout, "Binding of socket and listener done right\n");
+
     fprintf(stderr, "listener works\n");
 
     int j;
@@ -96,7 +102,9 @@ int main(int argc, char **argv) {
 
     for(j = 0; j < threads; j++){
         fprintf(stderr, "creating thread\n");
+        fprintf(stdout, "creating thread\n");
         pthread_create(&thread_pool[j], NULL, worker_threads, NULL);
+        fprintf(stdout, "Thread created\n");
         fprintf(stderr, "smoothly created\n");
     }
 
@@ -108,6 +116,7 @@ int main(int argc, char **argv) {
 
 
     while (1) {
+        fprintf(stdout, "Inside dispatcher threads while loop\n");
         int connfd;
         connfd = listener_accept(&sock);
         fprintf(stderr, "The pushed value of conn: %d\n", connfd);
@@ -121,6 +130,7 @@ int main(int argc, char **argv) {
 
 void *worker_threads(){
     while(true){
+        fprintf(stdout, "Inside the worker threads function\n");
         fprintf(stderr, "thread  is in\n");
         uintptr_t conn = 0;
         queue_pop(task_queue,(void **)&conn);
@@ -133,6 +143,8 @@ void *worker_threads(){
 }
 
 void handle_connection(int connfd) {
+
+    fprintf(stdout, "Handle connection called\n");
 
     conn_t *conn = conn_new(connfd);
 
@@ -156,6 +168,8 @@ void handle_connection(int connfd) {
 }
 
 void handle_get(conn_t *conn) {
+
+    fprintf(stdout, "Get successfully called\n");
 
     char *uri = conn_get_uri(conn);
     //char *Req_id = conn_get_header(conn, "Request-Id");
@@ -223,6 +237,8 @@ void handle_get(conn_t *conn) {
     res = &RESPONSE_OK;
 
     close(fd);
+
+    fprintf(stdout, "get completed\n");
     
 
 out:
@@ -264,7 +280,8 @@ out:
     }
     
     fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
-    fprintf(stdout, "GET,/%s,%d,%s\n", uri, code, Req_id);
+    //fprintf(stdout, "GET,/%s,%d,%s\n", uri, code, Req_id);
+    fprintf(stdout, "Log for get written\n");
 
     conn_send_response(conn, res);
 
@@ -274,6 +291,7 @@ void handle_unsupported(conn_t *conn) {
     //debug("handling unsupported request");
 
     // send responses
+    fprintf(stdout, "bad operation caught\n");
     const Request_t *method = conn_get_request(conn); // get the method
     const char *opr = request_get_str(method);
     char* req = conn_get_header(conn, "Request-Id");
@@ -285,7 +303,7 @@ void handle_unsupported(conn_t *conn) {
         req = "0";
     }
     fprintf(stderr, "%s,/%s,%d,%s\n",opr, uri, code, req);
-    fprintf(stdout, "%s,/%s,%d,%s\n",opr, uri, code, req);
+    //fprintf(stdout, "%s,/%s,%d,%s\n",opr, uri, code, req);
 
 
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
@@ -293,6 +311,7 @@ void handle_unsupported(conn_t *conn) {
 }
 
 void handle_put(conn_t *conn) {
+    fprintf(stdout, "Put called\n");
 
     char *uri = conn_get_uri(conn);
     const Response_t *res = NULL;
@@ -372,7 +391,7 @@ out:
     
     
     fprintf(stderr, "PUT,/%s,%d,%s\n", uri ,code , Req_id);
-    fprintf(stdout, "PUT,/%s,%d,%s\n", uri, code , Req_id);
+    //fprintf(stdout, "PUT,/%s,%d,%s\n", uri, code , Req_id);
 
 
     conn_send_response(conn, res);
