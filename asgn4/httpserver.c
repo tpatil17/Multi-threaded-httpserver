@@ -87,6 +87,8 @@ int main(int argc, char **argv) {
 
     pthread_t thread_pool[threads]; // array of threads
 
+    fprintf(stderr, "threads %d, a trial to see if thread pool is allocated\n", threads);
+
     for(j = 0; j < threads; j++){
         fprintf(stderr, "creating thread\n");
         pthread_create(&thread_pool[j], NULL, worker_threads, NULL);
