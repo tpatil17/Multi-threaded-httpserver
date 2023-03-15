@@ -270,14 +270,14 @@ void handle_unsupported(conn_t *conn) {
 
     // send responses
     const Request_t *method = conn_get_request(conn); // get the method
-    char *opr = request_get_str(method);
+    const char *opr = request_get_str(method);
     char* req = conn_get_header(conn, "Request-Id");
     char *uri = conn_get_uri(conn);
     //fprintf(stderr, "Unnsu,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
     int code = 501;
     
     
-    fprintf(stderr, "%s,/%s,%d,%s\n",opr, uri,code,Req_id);
+    fprintf(stderr, "%s,/%s,%d,%s\n",opr, uri, code, req);
 
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
     
@@ -359,7 +359,7 @@ out:
     }
     
     
-    fprintf(stderr, "PUT,/%s,%d,%s\n", uri ,code , req);
+    fprintf(stderr, "PUT,/%s,%d,%s\n", uri ,code , Req_id);
 
     conn_send_response(conn, res);
 }
