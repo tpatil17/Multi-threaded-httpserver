@@ -123,9 +123,9 @@ int main(int argc, char **argv) {
 void *worker_threads(){
     while(true){
         fprintf(stderr, "thread  is in\n");
-        uintptr_t conn;
+        int conn;
         queue_pop(task_queue,(void **)&conn);
-        fprintf(stderr, "conn: %p", &conn);
+        fprintf(stderr, "conn: %d", conn);
         fprintf(stderr, "queue pop is smooth\n");
         handle_connection(conn);
         close(conn);
