@@ -209,6 +209,7 @@ void handle_get(conn_t *conn) {
 
 
     int fd = open(uri, O_RDONLY);
+    
     if(fd < 0){
         if(access(uri, F_OK) != 0){
             res = &RESPONSE_NOT_FOUND;
@@ -233,8 +234,11 @@ void handle_get(conn_t *conn) {
         res = &RESPONSE_FORBIDDEN;
         goto out;
     }
+    flock(fd, LOCK_SH); // acquire reader lock
 
-    res = conn_send_file(conn, fd, size);
+    res = conn_send_file(conn, fd, size); // send contents
+
+    flock(fd, LOCK_UN); // release the reader lock
 
     res = &RESPONSE_OK;
 
@@ -339,6 +343,8 @@ void handle_put(conn_t *conn) {
         }
     }
 
+    flock(fd, LOCK_EX);
+
     res = conn_recv_file(conn, fd);
 
     if (res == NULL && existed) {
@@ -346,6 +352,8 @@ void handle_put(conn_t *conn) {
     } else if (res == NULL && !existed) {
         res = &RESPONSE_CREATED;
     }
+
+     flock(fd, LOCK_UN);
 
     close(fd);
 
