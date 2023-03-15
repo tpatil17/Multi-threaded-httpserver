@@ -19,6 +19,7 @@
 #include <pthread.h>
 #include "queue.h"
 #include <sys/stat.h>
+#include <sys/file.h>
 
 #define OPTIONS "t:"
 
