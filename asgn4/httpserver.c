@@ -30,35 +30,37 @@ void *worker_threads();
 queue_t *task_queue = NULL;
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
-        warnx("wrong arguments: %s port_num", argv[0]);
-        fprintf(stderr, "usage: %s <port>\n", argv[0]);
-        return EXIT_FAILURE;
-    }
-
+    
+    
+    int opt = 0;
     int threads;
 
-    if (argc == 3){
-        char *endptr = NULL;
-        threads = (int) strtoull(argv[2], &endptr, 10);
-        if (endptr && *endptr != '\0') {
-            warnx("invalid thread number: %s", argv[2]);
-            return EXIT_FAILURE;
+    while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
+        switch (opt) {
+        case 't':
+            threads = strtol(optarg, NULL, 10);
+            if (threads <= 0) {
+                errx(EXIT_FAILURE, "bad number of threads");
+            }
+            break;
+   
+        default: 
+            threads = 4;
         }
-
-    }else if (argc == 2)
-    {
-        threads = 4;// Default number of threads is 4
-        
     }
-    
 
-    char *endptr = NULL;
-    size_t port = (size_t) strtoull(argv[1], &endptr, 10);
-    if (endptr && *endptr != '\0') {
-        warnx("invalid port number: %s", argv[1]);
-        return EXIT_FAILURE;
+    if (optind >= argc) {
+        warnx("wrong number of arguments");
+        fprintf(stderr, "./httpserver [-t threads] <port>\n");
+        return 1;
     }
+
+    uint16_t port = strtouint16(argv[optind]);
+    if (port == 0) {
+        errx(1, "bad port number: %s", argv[1]);
+    }
+
+
 
     signal(SIGPIPE, SIG_IGN);
     Listener_Socket sock;
