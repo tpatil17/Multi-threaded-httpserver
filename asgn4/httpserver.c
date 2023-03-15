@@ -27,7 +27,7 @@ void handle_connection(int);
 void handle_get(conn_t *);
 void handle_put(conn_t *);
 void handle_unsupported(conn_t *);
-void *worker_threads(void *);
+void *worker_threads();
 
 queue_t *task_queue = NULL;
 
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-void *worker_threads(void *i){
+void *worker_threads(){
     while(true){
         fprintf(stderr, "thread  is in\n");
         uintptr_t conn;
