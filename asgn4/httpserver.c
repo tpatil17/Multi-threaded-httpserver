@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
     
     
     int opt = 0;
+    threads = 4 // Default value
 
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
@@ -58,8 +59,8 @@ int main(int argc, char **argv) {
             break;
    
         default: 
-            threads = 4;
-            fprintf(stderr, "Ok behaviour expected\n");
+            fprintf(stderr, "./httpserver [-t] <port>\n");
+            return 1;
         }
     }
 
