@@ -187,6 +187,11 @@ void handle_get(conn_t *conn) {
     const Response_t *res = NULL;
     //debug("handling get requests for %s", uri);
 
+    int code = 0;
+
+    char *Req_id = conn_get_header(conn, "Request-Id");
+
+
     int fd = open(uri, O_RDONLY);
     if(fd < 0){
         if(access(uri, F_OK) != 0){
@@ -219,10 +224,6 @@ void handle_get(conn_t *conn) {
 
     close(fd);
     
-    int code = 0;
-
-    char *Req_id = conn_get_header(conn, "Request-Id");
-
 
 out:
 
@@ -291,6 +292,9 @@ void handle_put(conn_t *conn) {
     // Check if file already exists before opening it.
     bool existed = access(uri, F_OK) == 0;
     //debug("%s existed? %d", uri, existed);
+    char *Req_id = conn_get_header(conn, "Request-Id");
+
+    int code = 0;
 
     // Open the file..
     int fd = open(uri, O_CREAT | O_TRUNC | O_WRONLY, 0600);
@@ -315,9 +319,7 @@ void handle_put(conn_t *conn) {
 
     close(fd);
 
-    char *Req_id = conn_get_header(conn, "Request-Id");
-
-    int code = 0;
+   
 out:
 
     if(res == &RESPONSE_OK){
