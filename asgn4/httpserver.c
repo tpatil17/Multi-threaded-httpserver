@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
     
     
     int opt = 0;
-    threads = 4 // Default value
+    threads = 4; // Default value
 
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
@@ -115,7 +115,6 @@ int main(int argc, char **argv) {
         //close(connfd);
 
     }
-    queue_delete(&task_queue);
     return EXIT_SUCCESS;
 }
 
