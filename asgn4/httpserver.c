@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
 
 void *worker_threads(void *i){
     while(true){
-        fprintf(stderr, "thread %d is in\n");
+        fprintf(stderr, "thread  is in\n");
         uintptr_t conn;
         queue_pop(task_queue,(void **)&conn);
         fprintf(stderr, "queue pop is smooth\n");
