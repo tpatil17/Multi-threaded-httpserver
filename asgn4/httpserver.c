@@ -264,6 +264,8 @@ out:
     }
     
     fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
+    fprintf(stdout, "%s,/%s,%d,%s\n",opr, uri, code, req);
+
     conn_send_response(conn, res);
 
 }
@@ -283,6 +285,8 @@ void handle_unsupported(conn_t *conn) {
         req = "0";
     }
     fprintf(stderr, "%s,/%s,%d,%s\n",opr, uri, code, req);
+    fprintf(stdout, "%s,/%s,%d,%s\n",opr, uri, code, req);
+
 
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
     
@@ -368,6 +372,8 @@ out:
     
     
     fprintf(stderr, "PUT,/%s,%d,%s\n", uri ,code , Req_id);
+    fprintf(stdout, "%s,/%s,%d,%s\n",opr, uri, code, req);
+
 
     conn_send_response(conn, res);
 }
