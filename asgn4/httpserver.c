@@ -129,8 +129,8 @@ void *worker_threads(){
         int connfd = *(int *)conn;
         fprintf(stderr, "conn: %d\n", connfd);
         fprintf(stderr, "queue pop is smooth\n");
-        //handle_connection(connfd);
-        //close(connfd);
+        handle_connection(connfd);
+        close(connfd);
     }
 }
 
