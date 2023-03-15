@@ -132,7 +132,7 @@ void *worker_threads(){
     while(true){
         fprintf(stdout, "Inside the worker threads function\n");
         fprintf(stderr, "thread  is in\n");
-        uintptr_t conn = 0;
+        intptr_t conn = 0;
         queue_pop(task_queue,(void **)&conn);
         int connfd = *(int *)conn;
         fprintf(stderr, "conn: %d\n", connfd);
