@@ -27,7 +27,7 @@ void handle_connection(int);
 void handle_get(conn_t *);
 void handle_put(conn_t *);
 void handle_unsupported(conn_t *);
-void *worker_threads();
+void *worker_threads(int);
 
 queue_t *task_queue = NULL;
 
