@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
 
 void *worker_threads(int i){
     while(true){
-        fprintf(stderr, "thread %d is in\n", i)
+        fprintf(stderr, "thread %d is in\n", i);
         uintptr_t conn;
         queue_pop(task_queue,(void **)&conn);
         handle_connection(conn);
