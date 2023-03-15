@@ -27,7 +27,7 @@ void handle_connection(int);
 void handle_get(conn_t *);
 void handle_put(conn_t *);
 void handle_unsupported(conn_t *);
-void *worker_threads();
+void *worker_threads(void *);
 
 queue_t *task_queue = NULL;
 
@@ -88,7 +88,9 @@ int main(int argc, char **argv) {
     pthread_t thread_pool[threads]; // array of threads
 
     for(j = 0; j < threads; j++){
+        fprintf(stderr, "creating thread\n");
         pthread_create(&thread_pool[j], NULL, worker_threads, NULL);
+        fprintf(stderr, "smoothly created\n");
     }
 
     fprintf(stderr, "threads have been created\n");
@@ -110,9 +112,9 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-void *worker_threads(){
+void *worker_threads(void *i){
     while(true){
-        fprintf(stderr, "thread is in\n");
+        fprintf(stderr, "thread %d is in\n");
         uintptr_t conn;
         queue_pop(task_queue,(void **)&conn);
         fprintf(stderr, "queue pop is smooth\n");
