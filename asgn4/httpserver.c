@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
     pthread_t thread_pool[threads]; // array of threads
 
     for(j = 0; j < threads; j++){
-        pthread_create(&thread_pool[j], NULL, worker_threads, NULL);
+        pthread_create(&thread_pool[j], NULL, worker_threads, j);
     }
 
     fprintf(stderr, "threads have been created\n");
@@ -110,8 +110,9 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-void *worker_threads(){
+void *worker_threads(int i){
     while(true){
+        fprintf(stderr, "thread %d is in\n", i)
         uintptr_t conn;
         queue_pop(task_queue,(void **)&conn);
         handle_connection(conn);
