@@ -22,6 +22,8 @@
 
 #define OPTIONS "t:"
 
+int threads;
+
 void handle_connection(int);
 
 void handle_get(conn_t *);
@@ -45,7 +47,6 @@ int main(int argc, char **argv) {
     
     
     int opt = 0;
-    int threads;
 
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
@@ -58,6 +59,7 @@ int main(int argc, char **argv) {
    
         default: 
             threads = 4;
+            fprintf(stderr, "Ok behaviour expected\n");
         }
     }
 
