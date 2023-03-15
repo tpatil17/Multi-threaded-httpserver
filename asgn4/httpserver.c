@@ -124,7 +124,7 @@ void handle_connection(int connfd) {
 void handle_get(conn_t *conn) {
 
     char *uri = conn_get_uri(conn);
-    char *Req_id = conn_get_header(conn, "Request-Id");
+    //char *Req_id = conn_get_header(conn, "Request-Id");
 
     debug("GET request not implemented. But, we want to get %s", uri);
 
