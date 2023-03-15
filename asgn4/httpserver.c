@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
         fprintf(stdout, "Inside dispatcher threads while loop\n");
         intptr_t connfd;
         connfd = listener_accept(&sock);
-        fprintf(stderr, "The pushed value of conn: %d\n", connfd);
+        //fprintf(stderr, "The pushed value of conn: %d\n", connfd);
         void *ptr = (void *)connfd;
         queue_push(task_queue, ptr); // Push the task to queue
         fprintf(stderr, "pushed the conn\n");
@@ -135,7 +135,7 @@ void *worker_threads(){
         intptr_t conn = 0;
         queue_pop(task_queue,(void **)&conn);
         int connfd = *(int *)conn;
-        fprintf(stderr, "conn: %ld\n", connfd);
+        fprintf(stderr, "conn: %d\n", connfd);
         fprintf(stderr, "queue pop is smooth\n");
         handle_connection(connfd);
         close(connfd);
