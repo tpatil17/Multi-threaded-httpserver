@@ -218,12 +218,15 @@ void handle_get(conn_t *conn) {
     res = &RESPONSE_OK;
 
     close(fd);
-
-out:
-    int code = 0; 
+    
+    int code = 0;
 
     char *Req_id = conn_get_header(conn, "Request-Id");
 
+
+out:
+
+   
     if(res == &RESPONSE_OK){
         code = 200;
 
@@ -265,7 +268,7 @@ void handle_unsupported(conn_t *conn) {
     //debug("handling unsupported request");
 
     // send responses
-    Request_t *method = conn_get_request(conn); // get the method
+    const Request_t *method = conn_get_request(conn); // get the method
     char *opr = request_get_str(method);
     char* req = conn_get_header(conn, "Request-Id");
     char *uri = conn_get_uri(conn);
@@ -312,10 +315,10 @@ void handle_put(conn_t *conn) {
 
     close(fd);
 
+    char *Req_id = conn_get_header(conn, "Request-Id");
+
+    int code = 0;
 out:
-    char *req = conn_get_header(conn, "Request-Id");
-   // fprintf(stderr, "PUT,/%s,%s,%s\n",uri, res, req);
-    int code;
 
     if(res == &RESPONSE_OK){
         code = 200;
