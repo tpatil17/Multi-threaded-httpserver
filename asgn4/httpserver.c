@@ -20,6 +20,8 @@
 #include "queue.h"
 #include <sys/stat.h>
 
+#define OPTIONS "t:"
+
 void handle_connection(int);
 
 void handle_get(conn_t *);
@@ -28,6 +30,16 @@ void handle_unsupported(conn_t *);
 void *worker_threads();
 
 queue_t *task_queue = NULL;
+
+static size_t strtouint16(char number[]) {
+    char *last;
+    long num = strtol(number, &last, 10);
+    if (num <= 0 || num > UINT16_MAX || *last != '\0') {
+        return 0;
+    }
+    return num;
+}
+
 
 int main(int argc, char **argv) {
     
