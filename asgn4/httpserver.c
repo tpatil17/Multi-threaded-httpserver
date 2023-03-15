@@ -45,7 +45,7 @@ static size_t strtouint16(char number[]) {
 
 int main(int argc, char **argv) {
 
-    fprintf(stdout, "Inside the main thread\n");
+    //fprintf(stdout, "Inside the main thread\n");
     
     
     int opt = 0;
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    fprintf(stdout, "terminal entries checked\n");
+    //fprintf(stdout, "terminal entries checked\n");
 
     if (optind >= argc) {
         warnx("wrong number of arguments");
@@ -74,41 +74,41 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    fprintf(stderr, "testing the file\n");
+    //fprintf(stderr, "testing the file\n");
 
     uint16_t port = strtouint16(argv[optind]);
     if (port == 0) {
         errx(1, "bad port number: %s", argv[1]);
     }
 
-    fprintf(stderr, "does not seem to have problem in getting port Port: %d\n", port);
+    //fprintf(stderr, "does not seem to have problem in getting port Port: %d\n", port);
 
 
     signal(SIGPIPE, SIG_IGN);
     Listener_Socket sock;
     listener_init(&sock, port);
 
-    fprintf(stdout, "Binding of socket and listener done right\n");
+    //fprintf(stdout, "Binding of socket and listener done right\n");
 
-    fprintf(stderr, "listener works\n");
+    //fprintf(stderr, "listener works\n");
 
     int j;
 
-    fprintf(stderr, "threads %d\n", threads);
+    //fprintf(stderr, "threads %d\n", threads);
 
     pthread_t thread_pool[threads]; // array of threads
 
-    fprintf(stderr, "threads %d, a trial to see if thread pool is allocated\n", threads);
+    //fprintf(stderr, "threads %d, a trial to see if thread pool is allocated\n", threads);
 
     for(j = 0; j < threads; j++){
-        fprintf(stderr, "creating thread\n");
-        fprintf(stdout, "creating thread\n");
+      //  fprintf(stderr, "creating thread\n");
+     //   fprintf(stdout, "creating thread\n");
         pthread_create(&thread_pool[j], NULL, worker_threads, NULL);
-        fprintf(stdout, "Thread created\n");
-        fprintf(stderr, "smoothly created\n");
+   //     fprintf(stdout, "Thread created\n");
+   //     fprintf(stderr, "smoothly created\n");
     }
 
-    fprintf(stderr, "threads have been created\n");
+    //fprintf(stderr, "threads have been created\n");
 
     // initialize the queue
 
@@ -116,13 +116,13 @@ int main(int argc, char **argv) {
 
 
     while (1) {
-        fprintf(stdout, "Inside dispatcher threads while loop\n");
+     //   fprintf(stdout, "Inside dispatcher threads while loop\n");
         intptr_t connfd;
         connfd = listener_accept(&sock);
         //printf(stderr, "The pushed value of conn: %d\n", connfd);
         //void *ptr = (void *)connfd;
         queue_push(task_queue, (void *)connfd); // Push the task to queue
-        fprintf(stderr, "pushed the conn\n");
+    //    fprintf(stderr, "pushed the conn\n");
         
     }
     return EXIT_SUCCESS;
@@ -132,13 +132,13 @@ void *worker_threads(){
     intptr_t conn;
 
     while(true){
-        fprintf(stdout, "Inside the worker threads function\n");
-        fprintf(stderr, "thread  is in\n");
+    //    fprintf(stdout, "Inside the worker threads function\n");
+    //    fprintf(stderr, "thread  is in\n");
         
         queue_pop(task_queue,(void **)&conn);
         
 
-        fprintf(stderr, "queue pop is smooth\n");
+    //    fprintf(stderr, "queue pop is smooth\n");
         handle_connection(conn);
         close(conn);
     }
@@ -146,7 +146,7 @@ void *worker_threads(){
 
 void handle_connection(int connfd) {
 
-    fprintf(stdout, "Handle connection called\n");
+//    fprintf(stdout, "Handle connection called\n");
 
     conn_t *conn = conn_new(connfd);
 
@@ -171,7 +171,7 @@ void handle_connection(int connfd) {
 
 void handle_get(conn_t *conn) {
 
-    fprintf(stdout, "Get successfully called\n");
+  //  fprintf(stdout, "Get successfully called\n");
 
     char *uri = conn_get_uri(conn);
     //char *Req_id = conn_get_header(conn, "Request-Id");
@@ -240,7 +240,7 @@ void handle_get(conn_t *conn) {
 
     close(fd);
 
-    fprintf(stdout, "get completed\n");
+//    fprintf(stdout, "get completed\n");
     
 
 out:
@@ -283,7 +283,7 @@ out:
     
     fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
     //fprintf(stdout, "GET,/%s,%d,%s\n", uri, code, Req_id);
-    fprintf(stdout, "Log for get written\n");
+//    fprintf(stdout, "Log for get written\n");
 
     conn_send_response(conn, res);
 
@@ -313,7 +313,7 @@ void handle_unsupported(conn_t *conn) {
 }
 
 void handle_put(conn_t *conn) {
-    fprintf(stdout, "Put called\n");
+//    fprintf(stdout, "Put called\n");
 
     char *uri = conn_get_uri(conn);
     const Response_t *res = NULL;
