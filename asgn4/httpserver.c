@@ -258,7 +258,10 @@ out:
         code = 505;
         /* code */
     }
-    
+
+    if (Req_id == NULL){
+        Req_id = '0';
+    }
     
     fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
     conn_send_response(conn, res);
@@ -276,7 +279,9 @@ void handle_unsupported(conn_t *conn) {
     //fprintf(stderr, "Unnsu,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
     int code = 501;
     
-    
+    if (req == NULL){
+        req = '0';
+    }
     fprintf(stderr, "%s,/%s,%d,%s\n",opr, uri, code, req);
 
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
@@ -356,6 +361,9 @@ out:
     {
         code = 505;
         /* code */
+    }
+    if (Req_id == NULL){
+        Req_id = '0';
     }
     
     
