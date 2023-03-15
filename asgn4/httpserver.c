@@ -220,7 +220,10 @@ void handle_get(conn_t *conn) {
     close(fd);
 
 out:
-    int code;
+    int code = 0; 
+
+    char *Req_id = conn_get_header(conn, "Request-Id");
+
     if(res == &RESPONSE_OK){
         code = 200;
 
@@ -253,7 +256,7 @@ out:
     }
     
     
-    fprintf(stderr, "GET,/%s,%d,%s\n", uri,code,Req_id);
+    fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
     conn_send_response(conn, res);
 
 }
@@ -267,38 +270,7 @@ void handle_unsupported(conn_t *conn) {
     char* req = conn_get_header(conn, "Request-Id");
     char *uri = conn_get_uri(conn);
     //fprintf(stderr, "Unnsu,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
-    int code;
-    
-    if(res == &RESPONSE_OK){
-        code = 200;
-
-    }else if (res == &RESPONSE_BAD_REQUEST)
-    {
-        code = 400;
-
-    }else if (res == &RESPONSE_FORBIDDEN)
-    {
-        
-        code = 403;/* code */
-    }else if (res == &RESPONSE_NOT_FOUND)
-    {
-        /* code */
-        code = 404;
-    }else if (res == &RESPONSE_INTERNAL_SERVER_ERROR)
-    {
-        /* code */
-        code = 500;
-
-    }else if (res == &RESPONSE_NOT_IMPLEMENTED)
-    {
-        /* code */
-        code = 501;
-
-    }else
-    {
-        code = 505;
-        /* code */
-    }
+    int code = 501;
     
     
     fprintf(stderr, "%s,/%s,%d,%s\n",opr, uri,code,Req_id);
