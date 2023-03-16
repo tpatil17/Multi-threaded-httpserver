@@ -243,7 +243,7 @@ void handle_get(conn_t *conn) {
 
     if(S_ISDIR(st.st_mode)!= 0){
         res = &RESPONSE_FORBIDDEN;
-        goto out;
+        goto out1;
     }
 
     res = conn_send_file(conn, fd, size); // send contents
@@ -345,7 +345,7 @@ void handle_put(conn_t *conn) {
     
     pthread_mutex_unlock(&creator_lock);
 
-    ftrunctate(fd, 0);
+    ftruncate(fd, 0);
     if (fd < 0) {
         //debug("%s: %d", uri, errno);
         if (errno == EACCES || errno == EISDIR || errno == ENOENT) {
