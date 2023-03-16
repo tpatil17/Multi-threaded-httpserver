@@ -25,6 +25,8 @@
 
 int threads;
 
+pthread_mutex_t creator_lock = PTHREAD_MUTEX_INITIALIZER; // file creator lock
+
 void handle_connection(int);
 
 void handle_get(conn_t *);
@@ -320,15 +322,20 @@ void handle_put(conn_t *conn) {
     const Response_t *res = NULL;
     //debug("handling put request for %s", uri);
 
-    // Check if file already exists before opening it.
-    bool existed = access(uri, F_OK) == 0;
     //debug("%s existed? %d", uri, existed);
     char *Req_id = conn_get_header(conn, "Request-Id");
 
     int code = 0;
 
     // Open the file..
+
+    // Check if file already exists before opening it.
+    pthread_mutex_lock(&creator_lock);
+    bool existed = access(uri, F_OK) == 0;
+
     int fd = open(uri, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+
+    pthread_mutex_unlock(&creator_lock);
     if (fd < 0) {
         //debug("%s: %d", uri, errno);
         if (errno == EACCES || errno == EISDIR || errno == ENOENT) {
@@ -349,8 +356,6 @@ void handle_put(conn_t *conn) {
     } else if (res == NULL && !existed) {
         res = &RESPONSE_CREATED;
     }
-
-     flock(fd, LOCK_UN);
 
     close(fd);
 
