@@ -288,7 +288,7 @@ out:
         Req_id = "0";
     }
     
-    fprintf(stderr, "GET,/%s,%hu,%s\n", uri, code, Req_id);
+    fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
     //fprintf(stdout, "GET,/%s,%d,%s\n", uri, code, Req_id);
 //    fprintf(stdout, "Log for get written\n");
 
