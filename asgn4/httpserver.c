@@ -245,7 +245,7 @@ void handle_get(conn_t *conn) {
     }
     flock(fd, LOCK_SH); // acquire reader lock
 
-    fprintf(stdout, "about to send file res: %hu\n", response_get_code(res));
+   // fprintf(stdout, "about to send file res: %hu\n", response_get_code(res));
 
     res = conn_send_file(conn, fd, size); // send contents
 
