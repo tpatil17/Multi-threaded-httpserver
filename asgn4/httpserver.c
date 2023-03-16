@@ -58,8 +58,8 @@ void write_log(conn_t *conn, const Response_t *res, char *uri){
 
     req = atoi(req_id);
 
-    unit16_t code;
-    code = response_get_code(res); // status code
+    
+    uint16_t code = response_get_code(res); // status code
 
     const Request_t *method = conn_get_request(conn); // get the method
 
