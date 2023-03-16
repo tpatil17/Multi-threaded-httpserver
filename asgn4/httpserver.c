@@ -252,7 +252,7 @@ void handle_get(conn_t *conn) {
     //fprintf(stdout, "sent file, res: %hu\n", response_get_code(res));
     
 
-    //flock(fd, LOCK_UN); // release the reader lock
+    flock(fd, LOCK_UN); // release the reader lock
 
     close(fd);
 
