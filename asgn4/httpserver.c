@@ -214,14 +214,17 @@ void handle_get(conn_t *conn) {
     if(fd < 0){
         if(access(uri, F_OK) != 0){
             res = &RESPONSE_NOT_FOUND;
+            conn_send_response(conn, res);
             goto out;
         }
         if(errno == EACCES || errno == EISDIR){
             res = &RESPONSE_FORBIDDEN;
+            conn_send_response(conn, res);
             goto out;
         }
         else{
             res = &RESPONSE_INTERNAL_SERVER_ERROR;
+            conn_send_response(conn, res);
             goto out;
         }
     }
@@ -240,8 +243,6 @@ void handle_get(conn_t *conn) {
     res = conn_send_file(conn, fd, size); // send contents
 
     flock(fd, LOCK_UN); // release the reader lock
-
-//    res = &RESPONSE_OK;
 
     close(fd);
 
@@ -277,8 +278,6 @@ out:
     {
         code = 505;
         /* code */
-    }else{
-        code = 200;
     }
 
     if (Req_id == NULL){
@@ -288,8 +287,6 @@ out:
     fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
     //fprintf(stdout, "GET,/%s,%d,%s\n", uri, code, Req_id);
 //    fprintf(stdout, "Log for get written\n");
-
-    conn_send_response(conn, res);
 
 }
 
