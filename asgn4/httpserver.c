@@ -173,7 +173,6 @@ void handle_get(conn_t *conn) {
 
     flock(fd, LOCK_SH); // acquire reader lock
 
-
     if (fd < 0) {
         if (access(uri, F_OK) != 0) {
             res = &RESPONSE_NOT_FOUND;
@@ -206,8 +205,6 @@ void handle_get(conn_t *conn) {
 
         goto out1;
     }
-
-   
 
     pthread_mutex_unlock(&creator_lock);
 
