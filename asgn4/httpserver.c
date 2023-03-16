@@ -206,7 +206,7 @@ void handle_get(conn_t *conn) {
     const Response_t *res = NULL;
     //debug("handling get requests for %s", uri);
 
-    //int code = 0;
+    int code = 0;
 
     char *Req_id = conn_get_header(conn, "Request-Id");
 
@@ -216,19 +216,16 @@ void handle_get(conn_t *conn) {
     if(fd < 0){
         if(access(uri, F_OK) != 0){
             res = &RESPONSE_NOT_FOUND;
-            //fprintf(stderr, "File not found on conflict\n");
             conn_send_response(conn, res);
             goto out;
         }
         if(errno == EACCES || errno == EISDIR){
             res = &RESPONSE_FORBIDDEN;
-            //fprintf(stderr, "forbidden\n");
             conn_send_response(conn, res);
             goto out;
         }
         else{
             res = &RESPONSE_INTERNAL_SERVER_ERROR;
-            //fprintf(stderr, "internal server error\n")
             conn_send_response(conn, res);
             goto out;
         }
@@ -245,12 +242,7 @@ void handle_get(conn_t *conn) {
     }
     flock(fd, LOCK_SH); // acquire reader lock
 
-   // fprintf(stdout, "about to send file res: %hu\n", response_get_code(res));
-
     res = conn_send_file(conn, fd, size); // send contents
-
-    //fprintf(stdout, "sent file, res: %hu\n", response_get_code(res));
-    
 
     flock(fd, LOCK_UN); // release the reader lock
 
@@ -262,39 +254,39 @@ void handle_get(conn_t *conn) {
 out:
 
    
-    // if (res == &RESPONSE_BAD_REQUEST)
-    // {
-    //     code = 400;
+    if (res == &RESPONSE_BAD_REQUEST)
+    {
+        code = 400;
 
-    // }else if (res == &RESPONSE_FORBIDDEN)
-    // {
+    }else if (res == &RESPONSE_FORBIDDEN)
+    {
         
-    //     code = 403;/* code */
-    // }else if (res == &RESPONSE_NOT_FOUND)
-    // {
-    //     /* code */
-    //     code = 404;
-    // }else if (res == &RESPONSE_INTERNAL_SERVER_ERROR)
-    // {
-    //     /* code */
-    //     code = 500;
+        code = 403;/* code */
+    }else if (res == &RESPONSE_NOT_FOUND)
+    {
+        /* code */
+        code = 404;
+    }else if (res == &RESPONSE_INTERNAL_SERVER_ERROR)
+    {
+        /* code */
+        code = 500;
 
-    // }else if (res == &RESPONSE_NOT_IMPLEMENTED)
-    // {
-    //     /* code */
-    //     code = 501;
+    }else if (res == &RESPONSE_NOT_IMPLEMENTED)
+    {
+        /* code */
+        code = 501;
 
-    // }else if (res == &RESPONSE_VERSION_NOT_SUPPORTED)
-    // {
-    //     code = 505;
-    //     /* code */
-    // }
+    }else if (res == &RESPONSE_VERSION_NOT_SUPPORTED)
+    {
+        code = 505;
+        /* code */
+    }
 
     if (Req_id == NULL){
         Req_id = "0";
     }
     
-    fprintf(stderr, "GET,/%s,%d,%s\n", uri, response_get_code(res), Req_id);
+    fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
     //fprintf(stdout, "GET,/%s,%d,%s\n", uri, code, Req_id);
 //    fprintf(stdout, "Log for get written\n");
 
@@ -342,7 +334,7 @@ void handle_put(conn_t *conn) {
     bool existed = access(uri, F_OK) == 0;
 
     int fd = open(uri, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-
+    
     pthread_mutex_unlock(&creator_lock);
     if (fd < 0) {
         //debug("%s: %d", uri, errno);
@@ -364,6 +356,7 @@ void handle_put(conn_t *conn) {
     } else if (res == NULL && !existed) {
         res = &RESPONSE_CREATED;
     }
+
 
     close(fd);
 
