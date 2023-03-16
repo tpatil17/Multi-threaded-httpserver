@@ -235,10 +235,6 @@ void handle_get(conn_t *conn) {
         }
     }
 
-    flock(fd, LOCK_SH); // acquire reader lock
-
-    pthread_mutex_unlock(&creator_lock);
-
     struct stat st = {0};
     stat(uri, &st);
 
@@ -246,8 +242,14 @@ void handle_get(conn_t *conn) {
 
     if(S_ISDIR(st.st_mode)!= 0){
         res = &RESPONSE_FORBIDDEN;
+        conn_send_response(conn, res);
+        pthread_mutex_unlock(&creator_lock);
         goto out1;
     }
+
+    flock(fd, LOCK_SH); // acquire reader lock
+
+    pthread_mutex_unlock(&creator_lock);
 
     res = conn_send_file(conn, fd, size); // send contents
 
