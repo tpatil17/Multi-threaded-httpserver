@@ -241,6 +241,8 @@ void handle_get(conn_t *conn) {
 
     flock(fd, LOCK_UN); // release the reader lock
 
+    res = &RESPONSE_OK;
+
     close(fd);
 
 //    fprintf(stdout, "get completed\n");
