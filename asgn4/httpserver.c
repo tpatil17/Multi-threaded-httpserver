@@ -20,6 +20,8 @@
 #include <pthread.h>
 #include "queue.h"
 #include <sys/stat.h>
+#include <stdint.h>
+
 #include <sys/file.h>
 
 #define OPTIONS "t:"
@@ -48,7 +50,7 @@ static size_t strtouint16(char number[]) {
 
 // write the audit log
 
-void write_log(conn_t conn, const Response_t *res, char *uri){
+void write_log(conn_t *conn, const Response_t *res, char *uri){
     
     char *req_id = conn_get_header(conn, "Request-Id"); //req id
 
@@ -56,7 +58,8 @@ void write_log(conn_t conn, const Response_t *res, char *uri){
 
     req = atoi(req_id);
 
-    unit16_t code = response_get_code(res); // status code
+    unit16_t code;
+    code = response_get_code(res); // status code
 
     const Request_t *method = conn_get_request(conn); // get the method
 
