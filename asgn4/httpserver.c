@@ -19,7 +19,7 @@
 #include <pthread.h>
 #include "queue.h"
 #include <sys/stat.h>
-#include <sys/file.h>
+#include <sys/file>
 
 #define OPTIONS "t:"
 
@@ -240,8 +240,6 @@ void handle_get(conn_t *conn) {
     res = conn_send_file(conn, fd, size); // send contents
 
     flock(fd, LOCK_UN); // release the reader lock
-
-    res = &RESPONSE_OK;
 
     close(fd);
 
