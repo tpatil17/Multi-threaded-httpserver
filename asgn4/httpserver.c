@@ -241,7 +241,7 @@ void handle_get(conn_t *conn) {
 
     flock(fd, LOCK_UN); // release the reader lock
 
-    res = &RESPONSE_OK;
+//    res = &RESPONSE_OK;
 
     close(fd);
 
@@ -251,10 +251,7 @@ void handle_get(conn_t *conn) {
 out:
 
    
-    if(res == &RESPONSE_OK){
-        code = 200;
-
-    }else if (res == &RESPONSE_BAD_REQUEST)
+    if (res == &RESPONSE_BAD_REQUEST)
     {
         code = 400;
 
@@ -276,10 +273,12 @@ out:
         /* code */
         code = 501;
 
-    }else
+    }else if (&RESPONSE_VERSION_NOT_SUPPORT)
     {
         code = 505;
         /* code */
+    }else{
+        code = 200;
     }
 
     if (Req_id == NULL){
