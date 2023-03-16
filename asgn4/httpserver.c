@@ -206,7 +206,7 @@ void handle_get(conn_t *conn) {
     const Response_t *res = NULL;
     //debug("handling get requests for %s", uri);
 
-    int code = 0;
+    //int code = 0;
 
     char *Req_id = conn_get_header(conn, "Request-Id");
 
@@ -249,7 +249,7 @@ void handle_get(conn_t *conn) {
 
     res = conn_send_file(conn, fd, size); // send contents
 
-    fprintf(stdout, "sent file, res: %hu\n", response_get_code(res));
+    //fprintf(stdout, "sent file, res: %hu\n", response_get_code(res));
     
 
     //flock(fd, LOCK_UN); // release the reader lock
@@ -262,39 +262,39 @@ void handle_get(conn_t *conn) {
 out:
 
    
-    if (res == &RESPONSE_BAD_REQUEST)
-    {
-        code = 400;
+    // if (res == &RESPONSE_BAD_REQUEST)
+    // {
+    //     code = 400;
 
-    }else if (res == &RESPONSE_FORBIDDEN)
-    {
+    // }else if (res == &RESPONSE_FORBIDDEN)
+    // {
         
-        code = 403;/* code */
-    }else if (res == &RESPONSE_NOT_FOUND)
-    {
-        /* code */
-        code = 404;
-    }else if (res == &RESPONSE_INTERNAL_SERVER_ERROR)
-    {
-        /* code */
-        code = 500;
+    //     code = 403;/* code */
+    // }else if (res == &RESPONSE_NOT_FOUND)
+    // {
+    //     /* code */
+    //     code = 404;
+    // }else if (res == &RESPONSE_INTERNAL_SERVER_ERROR)
+    // {
+    //     /* code */
+    //     code = 500;
 
-    }else if (res == &RESPONSE_NOT_IMPLEMENTED)
-    {
-        /* code */
-        code = 501;
+    // }else if (res == &RESPONSE_NOT_IMPLEMENTED)
+    // {
+    //     /* code */
+    //     code = 501;
 
-    }else if (res == &RESPONSE_VERSION_NOT_SUPPORTED)
-    {
-        code = 505;
-        /* code */
-    }
+    // }else if (res == &RESPONSE_VERSION_NOT_SUPPORTED)
+    // {
+    //     code = 505;
+    //     /* code */
+    // }
 
     if (Req_id == NULL){
         Req_id = "0";
     }
     
-    fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
+    fprintf(stderr, "GET,/%s,%d,%s\n", uri, response_get_code(res), Req_id);
     //fprintf(stdout, "GET,/%s,%d,%s\n", uri, code, Req_id);
 //    fprintf(stdout, "Log for get written\n");
 
