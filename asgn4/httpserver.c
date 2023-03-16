@@ -213,10 +213,6 @@ void handle_get(conn_t *conn) {
     pthread_mutex_lock(&creator_lock);    
 
     int fd = open(uri, O_RDONLY);
-
-    flock(fd, LOCK_SH); // acquire reader lock
-
-    pthread_mutex_unlock(&creator_lock);
     
     if(fd < 0){
         if(access(uri, F_OK) != 0){
@@ -235,6 +231,10 @@ void handle_get(conn_t *conn) {
             goto out1;
         }
     }
+
+    flock(fd, LOCK_SH); // acquire reader lock
+
+    pthread_mutex_unlock(&creator_lock);
 
     struct stat st = {0};
     stat(uri, &st);
@@ -335,17 +335,11 @@ void handle_put(conn_t *conn) {
 
     // Check if file already exists before opening it.
     pthread_mutex_lock(&creator_lock);
+
     bool existed = access(uri, F_OK) == 0;
 
     int fd = open(uri, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-
-    flock(fd, LOCK_EX);
-
-
     
-    pthread_mutex_unlock(&creator_lock);
-
-    ftruncate(fd, 0);
     if (fd < 0) {
         //debug("%s: %d", uri, errno);
         if (errno == EACCES || errno == EISDIR || errno == ENOENT) {
@@ -356,6 +350,12 @@ void handle_put(conn_t *conn) {
             goto out2;
         }
     }
+
+    flock(fd, LOCK_EX);
+    
+    pthread_mutex_unlock(&creator_lock);
+
+    ftruncate(fd, 0);
 
 
     res = conn_recv_file(conn, fd);
