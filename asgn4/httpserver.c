@@ -273,7 +273,7 @@ out:
         /* code */
         code = 501;
 
-    }else if (&RESPONSE_VERSION_NOT_SUPPORT)
+    }else if (&RESPONSE_VERSION_NOT_SUPPORTED)
     {
         code = 505;
         /* code */
