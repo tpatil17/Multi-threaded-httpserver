@@ -216,16 +216,19 @@ void handle_get(conn_t *conn) {
     if(fd < 0){
         if(access(uri, F_OK) != 0){
             res = &RESPONSE_NOT_FOUND;
+            //fprintf(stderr, "File not found on conflict\n");
             conn_send_response(conn, res);
             goto out;
         }
         if(errno == EACCES || errno == EISDIR){
             res = &RESPONSE_FORBIDDEN;
+            //fprintf(stderr, "forbidden\n");
             conn_send_response(conn, res);
             goto out;
         }
         else{
             res = &RESPONSE_INTERNAL_SERVER_ERROR;
+            //fprintf(stderr, "internal server error\n")
             conn_send_response(conn, res);
             goto out;
         }
@@ -243,8 +246,9 @@ void handle_get(conn_t *conn) {
     flock(fd, LOCK_SH); // acquire reader lock
 
     res = conn_send_file(conn, fd, size); // send contents
+    
 
-    flock(fd, LOCK_UN); // release the reader lock
+    //flock(fd, LOCK_UN); // release the reader lock
 
     close(fd);
 
