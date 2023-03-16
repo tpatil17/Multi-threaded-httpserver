@@ -46,10 +46,32 @@ static size_t strtouint16(char number[]) {
     return num;
 }
 
+// write the audit log
+
+void write_log(conn_t conn, const Response_t *res, char *uri){
+    
+    char *req_id = conn_get_header(conn, "Request-Id"); //req id
+
+    int req;
+
+    req = atoi(req_id);
+
+    unit16_t code = response_get_code(res); // status code
+
+    const Request_t *method = conn_get_request(conn); // get the method
+
+    const char *opr = request_get_str(method);
+
+    fprintf(stderr, "%s,/%s,%d,%d\n", opr, uri, (int) code, req);
+
+    return;
+}
+
 int main(int argc, char **argv) {
 
     //fprintf(stdout, "Inside the main thread\n");
-
+    
+    
     int opt = 0;
     threads = 4; // Default value
 
@@ -61,8 +83,10 @@ int main(int argc, char **argv) {
                 errx(EXIT_FAILURE, "bad number of threads");
             }
             break;
-
-        default: fprintf(stderr, "./httpserver [-t] <port>\n"); return 1;
+   
+        default: 
+            fprintf(stderr, "./httpserver [-t] <port>\n");
+            return 1;
         }
     }
 
@@ -83,6 +107,7 @@ int main(int argc, char **argv) {
 
     //fprintf(stderr, "does not seem to have problem in getting port Port: %d\n", port);
 
+
     signal(SIGPIPE, SIG_IGN);
     Listener_Socket sock;
     listener_init(&sock, port);
@@ -99,9 +124,10 @@ int main(int argc, char **argv) {
 
     //fprintf(stderr, "threads %d, a trial to see if thread pool is allocated\n", threads);
 
-    for (j = 0; j < threads; j++) {
-
+    for(j = 0; j < threads; j++){
+ 
         pthread_create(&thread_pool[j], NULL, worker_threads, NULL);
+  
     }
 
     //fprintf(stderr, "threads have been created\n");
@@ -110,23 +136,29 @@ int main(int argc, char **argv) {
 
     task_queue = queue_new(10);
 
-    while (1) {
 
+    while (1) {
+ 
         intptr_t connfd;
         connfd = listener_accept(&sock);
 
-        queue_push(task_queue, (void *) connfd); // Push the task to queue
+        queue_push(task_queue, (void *)connfd); // Push the task to queue
+
+        
     }
     return EXIT_SUCCESS;
 }
 
-void *worker_threads() {
+void *worker_threads(){
     intptr_t conn;
 
-    while (true) {
+    while(true){
+  
+        
+        queue_pop(task_queue,(void **)&conn);
+        
 
-        queue_pop(task_queue, (void **) &conn);
-
+  
         handle_connection(conn);
         close(conn);
     }
@@ -134,7 +166,7 @@ void *worker_threads() {
 
 void handle_connection(int connfd) {
 
-    //    fprintf(stdout, "Handle connection called\n");
+//    fprintf(stdout, "Handle connection called\n");
 
     conn_t *conn = conn_new(connfd);
 
@@ -159,47 +191,55 @@ void handle_connection(int connfd) {
 
 void handle_get(conn_t *conn) {
 
+
+
     char *uri = conn_get_uri(conn);
 
     const Response_t *res = NULL;
 
-    int code = 0;
+    pthread_mutex_lock(&creator_lock);    
 
-    char *Req_id = conn_get_header(conn, "Request-Id");
-
-    pthread_mutex_lock(&creator_lock);
-
-    int fd = open(uri, O_RDONLY);
-
-    if (fd < 0) {
-        if (access(uri, F_OK) != 0) {
-            res = &RESPONSE_NOT_FOUND;
-            conn_send_response(conn, res);
-
-            goto out1;
-        }
-        if (errno == EACCES || errno == EISDIR) {
-            res = &RESPONSE_FORBIDDEN;
-            conn_send_response(conn, res);
-
-            goto out1;
-        } else {
-            res = &RESPONSE_INTERNAL_SERVER_ERROR;
-            conn_send_response(conn, res);
-
-            goto out1;
-        }
-    }
-
-    struct stat st = { 0 };
+    struct stat st = {0};
     stat(uri, &st);
 
-    if (S_ISDIR(st.st_mode) != 0) {
+    if(S_ISDIR(st.st_mode)!= 0){
         res = &RESPONSE_FORBIDDEN;
         conn_send_response(conn, res);
-
-        goto out1;
+      
     }
+
+    int fd = open(uri, O_RDONLY);
+    
+    if(fd < 0){
+        if(access(uri, F_OK) != 0){
+            res = &RESPONSE_NOT_FOUND;
+            conn_send_response(conn, res);
+            write_log(conn, res, uri);
+            pthread_mutex_unlock(&creator_lock);
+            close(fd);
+            return;
+  
+        }
+        if(errno == EACCES || errno == EISDIR){
+            res = &RESPONSE_FORBIDDEN;
+            conn_send_response(conn, res);
+            write_log(conn, res, uri);
+            pthread_mutex_unlock(&creator_lock);
+            close(fd);
+            return;
+
+        }
+        else{
+            res = &RESPONSE_INTERNAL_SERVER_ERROR;
+            conn_send_response(conn, res);
+            write_log(conn, res, uri);
+            pthread_mutex_unlock(&creator_lock);
+            close(fd);
+            return;
+
+        }
+    }
+
 
     flock(fd, LOCK_SH); // acquire reader lock
 
@@ -209,41 +249,10 @@ void handle_get(conn_t *conn) {
 
     res = conn_send_file(conn, fd, size); // send contents
 
-    //    fprintf(stdout, "get completed\n");
-
-out1:
-
-    if (res == &RESPONSE_BAD_REQUEST) {
-        code = 400;
-
-    } else if (res == &RESPONSE_FORBIDDEN) {
-
-        code = 403; /* code */
-    } else if (res == &RESPONSE_NOT_FOUND) {
-        /* code */
-        code = 404;
-    } else if (res == &RESPONSE_INTERNAL_SERVER_ERROR) {
-        /* code */
-        code = 500;
-
-    } else if (res == &RESPONSE_NOT_IMPLEMENTED) {
-        /* code */
-        code = 501;
-
-    } else if (res == &RESPONSE_VERSION_NOT_SUPPORTED) {
-        code = 505;
-        /* code */
-    } else {
-        code = 200;
-    }
-
-    if (Req_id == NULL) {
-        Req_id = "0";
-    }
-
-    fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
+    write_log(conn, res, uri);
 
     close(fd);
+
 }
 
 void handle_unsupported(conn_t *conn) {
@@ -253,22 +262,24 @@ void handle_unsupported(conn_t *conn) {
     fprintf(stdout, "bad operation caught\n");
     const Request_t *method = conn_get_request(conn); // get the method
     const char *opr = request_get_str(method);
-    char *req = conn_get_header(conn, "Request-Id");
+    char* req = conn_get_header(conn, "Request-Id");
     char *uri = conn_get_uri(conn);
     //fprintf(stderr, "Unnsu,/%s,%s,%s\n", method, uri, &RESPONSE_NOT_IMPLEMENTED, req);
     int code = 501;
-
-    if (req == NULL) {
+    
+    if (req == NULL){
         req = "0";
     }
-    fprintf(stderr, "%s,/%s,%d,%s\n", opr, uri, code, req);
+    fprintf(stderr, "%s,/%s,%d,%s\n",opr, uri, code, req);
     //fprintf(stdout, "%s,/%s,%d,%s\n",opr, uri, code, req);
 
+
     conn_send_response(conn, &RESPONSE_NOT_IMPLEMENTED);
+    
 }
 
 void handle_put(conn_t *conn) {
-    //    fprintf(stdout, "Put called\n");
+//    fprintf(stdout, "Put called\n");
 
     char *uri = conn_get_uri(conn);
     const Response_t *res = NULL;
@@ -287,7 +298,7 @@ void handle_put(conn_t *conn) {
     bool existed = access(uri, F_OK) == 0;
 
     int fd = open(uri, O_CREAT | O_WRONLY, 0600);
-
+    
     if (fd < 0) {
         //debug("%s: %d", uri, errno);
         if (errno == EACCES || errno == EISDIR || errno == ENOENT) {
@@ -302,10 +313,11 @@ void handle_put(conn_t *conn) {
     }
 
     flock(fd, LOCK_EX);
-
+    
     pthread_mutex_unlock(&creator_lock);
 
     ftruncate(fd, 0);
+
 
     res = conn_recv_file(conn, fd);
 
@@ -315,40 +327,52 @@ void handle_put(conn_t *conn) {
         res = &RESPONSE_CREATED;
     }
 
+   
 out2:
 
-    if (res == &RESPONSE_OK) {
+    if(res == &RESPONSE_OK){
         code = 200;
-    } else if (res == &RESPONSE_CREATED) {
+    }
+    else if (res ==  &RESPONSE_CREATED)
+    {
         /* code */
         code = 201;
-    } else if (res == &RESPONSE_BAD_REQUEST) {
+    }
+    else if (res == &RESPONSE_BAD_REQUEST)
+    {
         code = 400;
 
-    } else if (res == &RESPONSE_FORBIDDEN) {
-
-        code = 403; /* code */
-    } else if (res == &RESPONSE_NOT_FOUND) {
+    }else if (res == &RESPONSE_FORBIDDEN)
+    {
+        
+        code = 403;/* code */
+    }else if (res == &RESPONSE_NOT_FOUND)
+    {
         /* code */
         code = 404;
-    } else if (res == &RESPONSE_INTERNAL_SERVER_ERROR) {
+    }else if (res == &RESPONSE_INTERNAL_SERVER_ERROR)
+    {
         /* code */
         code = 500;
 
-    } else if (res == &RESPONSE_NOT_IMPLEMENTED) {
+    }else if (res == &RESPONSE_NOT_IMPLEMENTED)
+    {
         /* code */
         code = 501;
 
-    } else {
+    }else
+    {
         code = 505;
         /* code */
     }
-    if (Req_id == NULL) {
+    if (Req_id == NULL){
         Req_id = "0";
     }
-
-    fprintf(stderr, "PUT,/%s,%d,%s\n", uri, code, Req_id);
+    
+    
+    fprintf(stderr, "PUT,/%s,%d,%s\n", uri ,code , Req_id);
     //fprintf(stdout, "PUT,/%s,%d,%s\n", uri, code , Req_id);
+
 
     conn_send_response(conn, res);
 
