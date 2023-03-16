@@ -210,8 +210,9 @@ void handle_get(conn_t *conn) {
 
     char *Req_id = conn_get_header(conn, "Request-Id");
 
-
+    pthread_mutex_lock(&creator_lock);    
     int fd = open(uri, O_RDONLY);
+    pthread_mutex_unlock(&creator_lock);
     
     if(fd < 0){
         if(access(uri, F_OK) != 0){
