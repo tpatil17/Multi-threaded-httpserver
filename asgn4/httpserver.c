@@ -211,24 +211,28 @@ void handle_get(conn_t *conn) {
     char *Req_id = conn_get_header(conn, "Request-Id");
 
     pthread_mutex_lock(&creator_lock);    
+
     int fd = open(uri, O_RDONLY);
+
+    flock(fd, LOCK_SH); // acquire reader lock
+
     pthread_mutex_unlock(&creator_lock);
     
     if(fd < 0){
         if(access(uri, F_OK) != 0){
             res = &RESPONSE_NOT_FOUND;
             conn_send_response(conn, res);
-            goto out;
+            goto out1;
         }
         if(errno == EACCES || errno == EISDIR){
             res = &RESPONSE_FORBIDDEN;
             conn_send_response(conn, res);
-            goto out;
+            goto out1;
         }
         else{
             res = &RESPONSE_INTERNAL_SERVER_ERROR;
             conn_send_response(conn, res);
-            goto out;
+            goto out1;
         }
     }
 
@@ -241,18 +245,15 @@ void handle_get(conn_t *conn) {
         res = &RESPONSE_FORBIDDEN;
         goto out;
     }
-    flock(fd, LOCK_SH); // acquire reader lock
 
     res = conn_send_file(conn, fd, size); // send contents
-
-    flock(fd, LOCK_UN); // release the reader lock
 
     close(fd);
 
 //    fprintf(stdout, "get completed\n");
     
 
-out:
+out1:
 
    
     if (res == &RESPONSE_BAD_REQUEST)
@@ -337,20 +338,25 @@ void handle_put(conn_t *conn) {
     bool existed = access(uri, F_OK) == 0;
 
     int fd = open(uri, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+
+    flock(fd, LOCK_EX);
+
+
     
     pthread_mutex_unlock(&creator_lock);
+
+    ftrunctate(fd, 0);
     if (fd < 0) {
         //debug("%s: %d", uri, errno);
         if (errno == EACCES || errno == EISDIR || errno == ENOENT) {
             res = &RESPONSE_FORBIDDEN;
-            goto out;
+            goto out2;
         } else {
             res = &RESPONSE_INTERNAL_SERVER_ERROR;
-            goto out;
+            goto out2;
         }
     }
 
-    flock(fd, LOCK_EX);
 
     res = conn_recv_file(conn, fd);
 
@@ -364,7 +370,7 @@ void handle_put(conn_t *conn) {
     close(fd);
 
    
-out:
+out2:
 
     if(res == &RESPONSE_OK){
         code = 200;
