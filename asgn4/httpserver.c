@@ -1,3 +1,4 @@
+
 // Asgn 2: A simple HTTP server.
 // By: Eugene Chou
 //     Andrew Quinn
@@ -185,9 +186,7 @@ void handle_get(conn_t *conn) {
     pthread_mutex_lock(&creator_lock);    
 
     int fd = open(uri, O_RDONLY);
-
-    flock(fd, LOCK_SH); // acquire reader lock
-
+    
     if(fd < 0){
         if(access(uri, F_OK) != 0){
             res = &RESPONSE_NOT_FOUND;
@@ -212,8 +211,6 @@ void handle_get(conn_t *conn) {
     struct stat st = {0};
     stat(uri, &st);
 
-    uint64_t size = st.st_size;
-
     if(S_ISDIR(st.st_mode)!= 0){
         res = &RESPONSE_FORBIDDEN;
         conn_send_response(conn, res);
@@ -221,12 +218,14 @@ void handle_get(conn_t *conn) {
         goto out1;
     }
 
+    flock(fd, LOCK_SH); // acquire reader lock
+
     pthread_mutex_unlock(&creator_lock);
-    
-    
+
+    uint64_t size = st.st_size;
+
     res = conn_send_file(conn, fd, size); // send contents
 
-    close(fd);
 
 //    fprintf(stdout, "get completed\n");
     
@@ -269,6 +268,8 @@ out1:
     }
     
     fprintf(stderr, "GET,/%s,%d,%s\n", uri, code, Req_id);
+
+    close(fd);
 
 }
 
@@ -314,7 +315,7 @@ void handle_put(conn_t *conn) {
 
     bool existed = access(uri, F_OK) == 0;
 
-    int fd = open(uri, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+    int fd = open(uri, O_CREAT | O_WRONLY, 0600);
     
     if (fd < 0) {
         //debug("%s: %d", uri, errno);
@@ -343,9 +344,6 @@ void handle_put(conn_t *conn) {
     } else if (res == NULL && !existed) {
         res = &RESPONSE_CREATED;
     }
-
-
-    close(fd);
 
    
 out2:
@@ -395,4 +393,6 @@ out2:
 
 
     conn_send_response(conn, res);
+
+    close(fd);
 }
