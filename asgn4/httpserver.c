@@ -218,16 +218,19 @@ void handle_get(conn_t *conn) {
         if(access(uri, F_OK) != 0){
             res = &RESPONSE_NOT_FOUND;
             conn_send_response(conn, res);
+            pthread_mutex_unlock(&creator_lock);
             goto out1;
         }
         if(errno == EACCES || errno == EISDIR){
             res = &RESPONSE_FORBIDDEN;
             conn_send_response(conn, res);
+            pthread_mutex_unlock(&creator_lock);
             goto out1;
         }
         else{
             res = &RESPONSE_INTERNAL_SERVER_ERROR;
             conn_send_response(conn, res);
+            pthread_mutex_unlock(&creator_lock);
             goto out1;
         }
     }
@@ -344,9 +347,11 @@ void handle_put(conn_t *conn) {
         //debug("%s: %d", uri, errno);
         if (errno == EACCES || errno == EISDIR || errno == ENOENT) {
             res = &RESPONSE_FORBIDDEN;
+            pthread_mutex_unlock(&creator_lock);
             goto out2;
         } else {
             res = &RESPONSE_INTERNAL_SERVER_ERROR;
+            pthread_mutex_unlock(&creator_lock);
             goto out2;
         }
     }
